@@ -1,0 +1,100 @@
+"use client";
+
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import SearchHeader from "../components/Search/SearchHeader";
+import ResultItem from "../components/Search/ResultItem";
+import ResultSkeleton from "../components/Search/ResultSkeleton";
+import Footer from "../components/Home/Footer";
+
+function SearchResults() {
+    const searchParams = useSearchParams();
+    const query = searchParams.get("q") || "";
+
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (!query) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchResults = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || "Failed to fetch results");
+                }
+
+                setResults(data.items || []);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchResults();
+    }, [query]);
+
+    return (
+        <div className="flex flex-col min-h-screen bg-white">
+            <SearchHeader query={query} />
+
+            <main className="flex-grow w-full px-4 sm:px-6 lg:px-[150px] pt-6 pb-24">
+                {/* Stats */}
+                {!loading && !error && results.length > 0 && (
+                    <div className="text-[#70757a] text-sm mb-6">
+                        About {results.length} results (mock speed 0.82 seconds)
+                    </div>
+                )}
+
+                {/* Content */}
+                <div className="w-full">
+                    {loading ? (
+                        <>
+                            <ResultSkeleton />
+                            <ResultSkeleton />
+                            <ResultSkeleton />
+                            <ResultSkeleton />
+                        </>
+                    ) : error ? (
+                        <div className="text-red-500">
+                            <p>Error: {error}</p>
+                        </div>
+                    ) : results.length > 0 ? (
+                        results.map((item, index) => (
+                            <ResultItem key={index} result={item} />
+                        ))
+                    ) : query ? (
+                        <div className="text-[#202124]">
+                            <p className="mt-4">Your search - <strong>{query}</strong> - did not match any documents.</p>
+                            <p className="mt-4">Suggestions:</p>
+                            <ul className="list-disc ml-8 mt-2 space-y-1">
+                                <li>Make sure that all words are spelled correctly.</li>
+                                <li>Try different keywords.</li>
+                                <li>Try more general keywords.</li>
+                            </ul>
+                        </div>
+                    ) : null}
+                </div>
+            </main>
+
+            <Footer />
+        </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-white"></div>}>
+            <SearchResults />
+        </Suspense>
+    );
+}

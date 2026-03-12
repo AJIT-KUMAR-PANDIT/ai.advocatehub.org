@@ -1,11 +1,28 @@
-export default function SearchBar() {
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function SearchBar({ defaultValue = "" }) {
+    const [query, setQuery] = useState(defaultValue);
+    const router = useRouter();
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (query.trim()) {
+            router.push(`/search?q=${encodeURIComponent(query)}`);
+        }
+    };
+
     return (
-        <div className="w-full max-w-[584px] mx-auto flex items-center rounded-full border border-gray-200 hover:shadow-md focus-within:shadow-md transition-shadow px-4 py-3 bg-white h-[46px] group">
+        <form onSubmit={handleSearch} className="w-full max-w-[584px] mx-auto flex items-center rounded-full border border-gray-200 hover:shadow-md focus-within:shadow-md transition-shadow px-4 py-3 bg-white h-[46px] group">
             <svg className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
             </svg>
             <input
                 type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className="flex-grow outline-none text-base bg-transparent text-gray-800"
                 autoFocus
             />
@@ -27,6 +44,6 @@ export default function SearchBar() {
                     <circle fill="#34a853" cx="16.5" cy="16.5" r="1.5" />
                 </svg>
             </div>
-        </div>
+        </form>
     );
 }
