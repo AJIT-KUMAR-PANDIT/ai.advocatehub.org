@@ -1,12 +1,32 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 export default function ModeToggle() {
+    const pathname = usePathname();
+    const isAiMode = pathname === "/AImode";
+
     return (
-        <div className="mb-4 flex items-center justify-center gap-2 rounded-full bg-gray-100 p-1">
-            <button className="rounded-full bg-white px-4 py-1.5 text-sm font-medium text-gray-800 shadow-sm transition-all cursor-pointer">
+        <div className="mb-4 flex items-center justify-center gap-2 rounded-full bg-white/50 backdrop-blur-sm p-1 shadow-sm border border-gray-100">
+            <Link
+                href="/"
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all cursor-pointer ${!isAiMode
+                        ? "bg-white text-gray-800 shadow-sm"
+                        : "text-gray-500 hover:text-gray-800"
+                    }`}
+            >
                 Search
-            </button>
-            <button className="rounded-full px-4 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-800 transition-all cursor-pointer flex items-center gap-1.5">
+            </Link>
+            <Link
+                href="/AImode"
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all cursor-pointer flex items-center gap-1.5 ${isAiMode
+                        ? "bg-white text-gray-800 shadow-sm"
+                        : "text-gray-500 hover:text-gray-800"
+                    }`}
+            >
                 <svg
-                    className="h-4 w-4"
+                    className={`h-4 w-4 ${isAiMode ? "text-purple-500" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -20,7 +40,7 @@ export default function ModeToggle() {
                     />
                 </svg>
                 AI Mode
-            </button>
+            </Link>
         </div>
     );
 }
