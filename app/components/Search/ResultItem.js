@@ -3,28 +3,48 @@ import Link from "next/link";
 export default function ResultItem({ result }) {
     if (!result) return null;
 
+    let resolvedHostname = "";
+    try {
+        resolvedHostname = new URL(result.link, "https://advocatehub.org").hostname.replace(/^www\./, "");
+    } catch {
+        resolvedHostname = result.displayLink || result.formattedUrl || "advocatehub.org";
+    }
+
+    const displayUrl = result.formattedUrl || result.displayLink || resolvedHostname;
+    const badgeText = resolvedHostname.slice(0, 2).toUpperCase() || "AH";
+
     return (
-        <div className="mb-8 w-full max-w-[650px]">
-            <div className="flex flex-col gap-1">
-                <Link href={result.link} className="group">
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 border border-gray-200">
-                            <span className="text-xs font-bold text-gray-500">{result.formattedUrl?.[0]?.toUpperCase() || "W"}</span>
+        <article className="surface-panel-strong group rounded-[28px] p-5 sm:p-6">
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-[rgba(255,190,74,0.16)] text-sm font-bold text-[#d75127]">
+                            {badgeText}
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-sm text-[#202124] truncate max-w-[280px] sm:max-w-none">
-                                {result.formattedUrl || result.displayLink || (new URL(result.link)).hostname}
-                            </span>
+                        <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-[#2d1b12]">
+                                {displayUrl}
+                            </p>
+                            <p className="truncate text-xs uppercase tracking-[0.2em] text-[#8f6a52]">
+                                {resolvedHostname}
+                            </p>
                         </div>
                     </div>
-                    <h3 className="text-xl text-[#1a0dab] group-hover:underline font-normal lineHeight-[1.2]">
+                    <span className="hidden rounded-full border border-[#f4ddbf] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#8f6a52] sm:inline-flex">
+                        Open result
+                    </span>
+                </div>
+
+                <Link href={result.link} className="block">
+                    <h3 className="font-display text-2xl font-semibold leading-tight text-[#2d1b12] group-hover:text-[#d75127] sm:text-[1.9rem]">
                         {result.title}
                     </h3>
                 </Link>
+
+                <p className="text-sm leading-7 text-[#7b5b42] sm:text-[15px]">
+                    {result.snippet}
+                </p>
             </div>
-            <p className="text-[#4d5156] mt-1 text-sm leading-[1.58]">
-                {result.snippet}
-            </p>
-        </div>
+        </article>
     );
 }

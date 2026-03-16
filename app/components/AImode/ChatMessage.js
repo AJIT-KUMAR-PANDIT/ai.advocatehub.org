@@ -16,16 +16,16 @@ function renderMarkdown(text) {
 
         // Headings
         if (line.startsWith("### ")) {
-            elements.push(<h3 key={i} className="text-base font-semibold text-gray-900 mt-3 mb-1">{line.slice(4)}</h3>);
+            elements.push(<h3 key={i} className="font-display mt-3 mb-1 text-lg font-semibold text-[#fff4de]">{line.slice(4)}</h3>);
         } else if (line.startsWith("## ")) {
-            elements.push(<h2 key={i} className="text-lg font-bold text-gray-900 mt-4 mb-1">{line.slice(3)}</h2>);
+            elements.push(<h2 key={i} className="font-display mt-4 mb-1 text-xl font-semibold text-[#fff4de]">{line.slice(3)}</h2>);
         } else if (line.startsWith("# ")) {
-            elements.push(<h1 key={i} className="text-xl font-bold text-gray-900 mt-4 mb-2">{line.slice(2)}</h1>);
+            elements.push(<h1 key={i} className="font-display mt-4 mb-2 text-2xl font-semibold text-[#fff4de]">{line.slice(2)}</h1>);
         }
         // Bullet points
         else if (line.startsWith("- ") || line.startsWith("* ")) {
             elements.push(
-                <li key={i} className="ml-4 list-disc text-gray-700 text-sm leading-relaxed">
+                <li key={i} className="ml-4 list-disc text-sm leading-7 text-[#f3d9be]">
                     {inlineFormat(line.slice(2))}
                 </li>
             );
@@ -33,14 +33,14 @@ function renderMarkdown(text) {
         // Numbered list
         else if (/^\d+\.\s/.test(line)) {
             elements.push(
-                <li key={i} className="ml-4 list-decimal text-gray-700 text-sm leading-relaxed">
+                <li key={i} className="ml-4 list-decimal text-sm leading-7 text-[#f3d9be]">
                     {inlineFormat(line.replace(/^\d+\.\s/, ""))}
                 </li>
             );
         }
         // Horizontal rule
         else if (line.startsWith("---") || line.startsWith("___")) {
-            elements.push(<hr key={i} className="my-3 border-gray-200" />);
+            elements.push(<hr key={i} className="my-3 border-white/10" />);
         }
         // Empty line — spacer
         else if (line.trim() === "") {
@@ -49,7 +49,7 @@ function renderMarkdown(text) {
         // Normal paragraph
         else {
             elements.push(
-                <p key={i} className="text-gray-700 text-sm leading-relaxed">
+                <p key={i} className="text-sm leading-7 text-[#f3d9be]">
                     {inlineFormat(line)}
                 </p>
             );
@@ -65,11 +65,11 @@ function inlineFormat(text) {
     const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g);
     return parts.map((part, idx) => {
         if (part.startsWith("**") && part.endsWith("**"))
-            return <strong key={idx} className="font-semibold text-gray-900">{part.slice(2, -2)}</strong>;
+            return <strong key={idx} className="font-semibold text-white">{part.slice(2, -2)}</strong>;
         if (part.startsWith("*") && part.endsWith("*"))
             return <em key={idx} className="italic">{part.slice(1, -1)}</em>;
         if (part.startsWith("`") && part.endsWith("`"))
-            return <code key={idx} className="bg-purple-50 text-purple-700 px-1 py-0.5 rounded text-xs font-mono">{part.slice(1, -1)}</code>;
+            return <code key={idx} className="rounded bg-white/10 px-1.5 py-0.5 text-xs font-mono text-[#ffbe4a]">{part.slice(1, -1)}</code>;
         return part;
     });
 }
@@ -86,7 +86,7 @@ export default function ChatMessage({ message, isStreaming }) {
     if (isUser) {
         return (
             <div className="flex justify-end mb-4 px-2">
-                <div className="max-w-[75%] bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm">
+                <div className="max-w-[80%] rounded-[26px] rounded-tr-sm bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] px-4 py-3 text-[#2a1610] shadow-[0_18px_36px_rgba(28,13,9,0.24)]">
                     {hasAttachments && (
                         <div className="mb-2 flex flex-wrap justify-end gap-2">
                             {message.attachments.map((attachment) => (
@@ -100,7 +100,7 @@ export default function ChatMessage({ message, isStreaming }) {
                     )}
 
                     {message.text && (
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                        <p className="whitespace-pre-wrap text-sm leading-7">{message.text}</p>
                     )}
                 </div>
             </div>
@@ -110,7 +110,7 @@ export default function ChatMessage({ message, isStreaming }) {
     return (
         <div className="flex items-start gap-3 mb-5 px-2">
             {/* Avatar */}
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-sm">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] shadow-sm">
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -119,16 +119,16 @@ export default function ChatMessage({ message, isStreaming }) {
 
             {/* Bubble */}
             <div className="flex-1 max-w-[85%]">
-                <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm">
+                <div className="rounded-[28px] rounded-tl-sm border border-[#ffbe4a]/12 bg-[#321710]/78 px-5 py-4 shadow-[0_14px_32px_rgba(14,6,5,0.22)] backdrop-blur-sm">
                     {message.text
-                        ? <div className="prose prose-sm max-w-none">{renderMarkdown(message.text)}</div>
+                        ? <div className="max-w-none">{renderMarkdown(message.text)}</div>
                         : <div className="flex gap-1 items-center py-1">
-                            <span className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "0ms" }} />
-                            <span className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "150ms" }} />
-                            <span className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                            <span className="h-2 w-2 rounded-full bg-[#ffbe4a] animate-bounce" style={{ animationDelay: "0ms" }} />
+                            <span className="h-2 w-2 rounded-full bg-[#ffbe4a] animate-bounce" style={{ animationDelay: "150ms" }} />
+                            <span className="h-2 w-2 rounded-full bg-[#ffbe4a] animate-bounce" style={{ animationDelay: "300ms" }} />
                         </div>
                     }
-                    {isStreaming && <span className="inline-block w-0.5 h-4 bg-purple-500 animate-pulse ml-0.5 align-text-bottom" />}
+                    {isStreaming && <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-[#ffbe4a] align-text-bottom" />}
                 </div>
                 <div ref={endRef} />
             </div>

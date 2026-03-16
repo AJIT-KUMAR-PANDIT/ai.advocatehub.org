@@ -30,16 +30,16 @@ export default function AttachmentChip({ attachment, onRemove, tone = "neutral" 
     const kind = getAttachmentKind(attachment);
     const classes = tone === "user"
         ? {
-            wrapper: "border border-white/20 bg-white/10 text-white/90",
-            meta:    "text-white/70",
-            button:  "text-white/70 hover:bg-white/10 hover:text-white",
-            icon:    "text-white/80",
+            wrapper: "border border-[#2a1610]/10 bg-[#2a1610]/10 text-[#2a1610] backdrop-blur-sm",
+            meta:    "text-[#523327]",
+            button:  "text-[#523327] hover:bg-[#2a1610]/10 hover:text-[#2a1610]",
+            icon:    "text-[#2a1610]",
         }
         : {
-            wrapper: "border border-gray-200 bg-white text-gray-700 shadow-sm",
-            meta:    "text-gray-400",
-            button:  "text-gray-400 hover:bg-gray-100 hover:text-red-500",
-            icon:    "text-purple-500",
+            wrapper: "border border-[#ffbe4a]/12 bg-[#3a1b12]/82 text-[#fff4de] shadow-sm backdrop-blur-sm",
+            meta:    "text-[#d6a88a]",
+            button:  "text-[#d6a88a] hover:bg-white/10 hover:text-white",
+            icon:    "text-[#ffbe4a]",
         };
 
     return (

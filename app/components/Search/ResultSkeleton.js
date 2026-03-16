@@ -1,13 +1,17 @@
 export default function ResultSkeleton() {
     return (
-        <div className="mb-8 w-full max-w-[650px] animate-pulse">
-            <div className="flex items-center gap-2 mb-2">
-                <div className="w-7 h-7 bg-gray-200 rounded-full"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+        <div className="surface-panel-strong animate-pulse rounded-[28px] p-5 sm:p-6">
+            <div className="mb-4 flex items-center gap-3">
+                <div className="h-11 w-11 rounded-2xl bg-[#f7debc]"></div>
+                <div className="space-y-2">
+                    <div className="h-4 w-48 rounded-full bg-[#f7debc]"></div>
+                    <div className="h-3 w-28 rounded-full bg-[#f7debc]"></div>
+                </div>
             </div>
-            <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
-            <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+            <div className="mb-4 h-8 w-3/4 rounded-full bg-[#f7debc]"></div>
+            <div className="mb-2 h-4 w-full rounded-full bg-[#f7debc]"></div>
+            <div className="mb-2 h-4 w-5/6 rounded-full bg-[#f7debc]"></div>
+            <div className="h-4 w-2/3 rounded-full bg-[#f7debc]"></div>
         </div>
     );
 }

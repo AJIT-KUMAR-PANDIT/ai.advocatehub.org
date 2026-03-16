@@ -1,12 +1,20 @@
+import Link from "next/link";
+
 export default function ActionButtons() {
     return (
-        <div className="mt-[28px] flex gap-3 justify-center">
-            <button className="bg-[#f8f9fa] text-[#3c4043] text-sm px-4 py-2 rounded-[4px] hover:border-gray-300 border border-transparent hover:shadow-sm focus:outline-none focus:border-blue-500 transition-all cursor-pointer">
-                AdvocateHub Search
-            </button>
-            <button className="bg-[#f8f9fa] text-[#3c4043] text-sm px-4 py-2 rounded-[4px] hover:border-gray-300 border border-transparent hover:shadow-sm focus:outline-none focus:border-blue-500 transition-all cursor-pointer">
-                I&apos;m Feeling Lucky
-            </button>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+                href="/search?q=latest+Supreme+Court+judgments+India"
+                className="action-primary px-5 py-3 text-sm font-semibold"
+            >
+                Explore live results
+            </Link>
+            <Link
+                href="/AImode"
+                className="action-secondary px-5 py-3 text-sm font-semibold"
+            >
+                Open AI workspace
+            </Link>
         </div>
     );
 }

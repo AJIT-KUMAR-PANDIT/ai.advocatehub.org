@@ -31,6 +31,21 @@ const SUGGESTED_PROMPTS = [
     "What is a PIL and how to file one?",
 ];
 
+const WELCOME_PANELS = [
+    {
+        title: "Upload evidence",
+        description: "Work from PDFs, Word files, text files, or images when the answer depends on the record itself.",
+    },
+    {
+        title: "Web + file RAG",
+        description: "Use live search grounding, uploaded documents, and embeddings-ready context instead of blind completion.",
+    },
+    {
+        title: "Draft faster",
+        description: "Turn research into summaries, issue lists, first drafts, and client-ready explanations in one thread.",
+    },
+];
+
 const LLM_SETTINGS_STORAGE_KEY = "advocatehub.customLlmSettings";
 const DEFAULT_LLM_SETTINGS = {
     enabled: false,
@@ -339,32 +354,65 @@ export default function AImode() {
 
     // ── Render ────────────────────────────────────────────────
     return (
-        <div className="flex flex-col min-h-screen bg-ai-gradient transition-all duration-700">
+        <div className="app-shell flex min-h-screen flex-col bg-ai-gradient transition-all duration-700">
             <Header />
 
-            <main className="flex-grow flex flex-col w-full max-w-[800px] mx-auto px-4 sm:px-6 pt-4 pb-0">
+            <main className="flex-grow flex w-full max-w-[1100px] flex-col mx-auto px-4 sm:px-6 pt-6 pb-2">
 
                 {/* ── Welcome / Empty state ── */}
                 {showWelcome && (
-                    <div className="flex flex-col items-center justify-center flex-grow mt-[-10vh]">
-                        <Logo />
-                        <ModeToggle />
+                    <div className="flex flex-grow items-center justify-center py-4 sm:py-8">
+                        <div className="ai-surface-strong w-full rounded-[36px] px-6 py-8 sm:px-8 sm:py-10 lg:px-10">
+                            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+                                <div>
+                                    <div className="ai-kicker">
+                                        <span className="accent-dot" />
+                                        AI Research Workspace
+                                    </div>
+                                    <div className="mt-6">
+                                        <Logo compact />
+                                    </div>
+                                    <div className="mt-3">
+                                        <ModeToggle />
+                                    </div>
 
-                        <p className="text-gray-500 text-sm mt-2 mb-6 text-center max-w-md">
-                            Ask anything about Indian law, upload PDFs, docs, or images, and switch between the built-in Gemini setup or your own OpenAI-compatible LLM.
-                        </p>
+                                    <h1 className="font-display mt-8 max-w-3xl text-4xl font-semibold leading-tight text-[#fff4de] sm:text-5xl">
+                                        Draft, analyze, and reason from the actual legal record.
+                                    </h1>
+                                    <p className="ai-subtle mt-5 max-w-2xl text-base leading-7">
+                                        Ask about Indian law, attach source documents, compare search-grounded answers,
+                                        and switch between the built-in Gemini workflow or your own OpenAI-compatible endpoint.
+                                    </p>
 
-                        {/* Suggested Prompts — click to send immediately */}
-                        <div className="flex flex-wrap gap-2 justify-center max-w-[680px] mb-8">
-                            {SUGGESTED_PROMPTS.map((prompt, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => handlePromptClick(prompt)}
-                                    className="px-4 py-2 bg-white/60 hover:bg-white/95 border border-white/40 shadow-sm rounded-full text-[13px] text-gray-700 font-medium transition-all hover:shadow-md hover:border-purple-200 hover:text-purple-700"
-                                >
-                                    {prompt}
-                                </button>
-                            ))}
+                                    <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                                        {SUGGESTED_PROMPTS.map((prompt, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => handlePromptClick(prompt)}
+                                                className="ai-surface text-left rounded-[24px] px-4 py-4 text-sm font-medium leading-6 text-[#ffe3bb] hover:border-[#ffbe4a]/40 hover:text-white"
+                                            >
+                                                {prompt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-4">
+                                    {WELCOME_PANELS.map((panel) => (
+                                        <div key={panel.title} className="ai-surface rounded-[28px] p-5">
+                                            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#ffd697]">
+                                                Workspace
+                                            </p>
+                                            <h2 className="font-display mt-3 text-2xl font-semibold leading-tight text-white">
+                                                {panel.title}
+                                            </h2>
+                                            <p className="ai-subtle mt-3 text-sm leading-7">
+                                                {panel.description}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -372,7 +420,7 @@ export default function AImode() {
                 {/* ── Chat Messages ── */}
                 {!showWelcome && (
                     <div
-                        className="flex-grow overflow-y-auto py-4"
+                        className="ai-surface-strong flex-grow overflow-y-auto rounded-[32px] p-3 sm:p-4"
                         style={{ minHeight: 0 }}
                     >
                         {messages.map((msg) => (
@@ -385,7 +433,7 @@ export default function AImode() {
 
                         {/* Error banner */}
                         {error && (
-                            <div className="mx-2 mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-start gap-2">
+                            <div className="mx-2 mb-4 flex items-start gap-2 rounded-[22px] border border-[#ff9d7a]/40 bg-[#5b1d12]/80 p-4 text-sm text-[#ffd4c7]">
                                 <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -396,13 +444,13 @@ export default function AImode() {
                         {/* Grounding Sources */}
                         {sources.length > 0 && (
                             <div className="mx-2 mb-4">
-                                <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                <p className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#ffd697]">
                                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                     Grounded Sources
                                 </p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     {sources.map((src, i) => (
                                         <SourceCard key={i} source={src} index={i} />
                                     ))}
@@ -429,15 +477,15 @@ export default function AImode() {
                         <button
                             type="button"
                             onClick={() => setShowLlmSettings((prev) => !prev)}
-                            className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm backdrop-blur-md transition-all hover:bg-white"
+                            className="ai-surface inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold text-[#ffe3bb] hover:bg-white/10"
                         >
-                            <svg className="h-3.5 w-3.5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-3.5 w-3.5 text-[#ffbe4a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M7 12h10M10 17h4" />
                             </svg>
                             {showLlmSettings ? "Hide LLM settings" : "Use your own LLM"}
                         </button>
 
-                        <p className="text-[11px] text-right text-gray-500">
+                        <p className="ai-subtle text-right text-[11px]">
                             {llmSettings.enabled
                                 ? "Custom endpoint enabled"
                                 : "Using built-in Gemini"}
@@ -445,11 +493,11 @@ export default function AImode() {
                     </div>
 
                     {showLlmSettings && (
-                        <div className="mb-3 rounded-2xl border border-white/70 bg-white/92 p-4 shadow-lg backdrop-blur-md">
+                        <div className="ai-surface-strong mb-3 rounded-[28px] p-5">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                 <div>
-                                    <h2 className="text-sm font-semibold text-gray-900">Bring your own LLM</h2>
-                                    <p className="mt-1 max-w-2xl text-xs leading-relaxed text-gray-500">
+                                    <h2 className="font-display text-2xl font-semibold text-white">Bring your own LLM</h2>
+                                    <p className="ai-subtle mt-2 max-w-2xl text-sm leading-7">
                                         Connect an OpenAI-compatible endpoint such as OpenAI, OpenRouter, Groq, Ollama, or LM Studio.
                                         When this is off, AdvocateHub keeps using Gemini with Google Search grounding.
                                     </p>
@@ -458,22 +506,22 @@ export default function AImode() {
                                 <button
                                     type="button"
                                     onClick={resetLlmSettings}
-                                    className="self-start rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-red-200 hover:text-red-600"
+                                    className="ai-action-secondary self-start px-4 py-2 text-xs font-semibold hover:text-white"
                                 >
                                     Clear saved values
                                 </button>
                             </div>
 
-                            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-purple-100 bg-purple-50/70 px-4 py-3">
+                            <label className="mt-5 flex items-start gap-3 rounded-[24px] border border-[#ffbe4a]/16 bg-white/6 px-4 py-4">
                                 <input
                                     type="checkbox"
                                     checked={llmSettings.enabled}
                                     onChange={(e) => updateLlmSetting("enabled", e.target.checked)}
-                                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#ffbe4a] focus:ring-[#ffbe4a]"
                                 />
                                 <div>
-                                    <p className="text-sm font-medium text-gray-900">Use my own endpoint for chat</p>
-                                    <p className="mt-1 text-xs leading-relaxed text-gray-500">
+                                    <p className="text-sm font-semibold text-white">Use my own endpoint for chat</p>
+                                    <p className="ai-subtle mt-1 text-sm leading-6">
                                         Turn this on to send chat requests through your own provider instead of the built-in Gemini setup.
                                     </p>
                                 </div>
@@ -481,7 +529,7 @@ export default function AImode() {
 
                             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <label className="block">
-                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#ffd697]">
                                         Endpoint URL
                                     </span>
                                     <input
@@ -489,12 +537,12 @@ export default function AImode() {
                                         value={llmSettings.url}
                                         onChange={(e) => updateLlmSetting("url", e.target.value)}
                                         placeholder="http://localhost:11434/v1 or https://openrouter.ai/api/v1"
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
+                                        className="w-full rounded-2xl border border-[#ffbe4a]/14 bg-[#1f0d09] px-4 py-3 text-sm text-[#fff4de] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
                                     />
                                 </label>
 
                                 <label className="block">
-                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#ffd697]">
                                         Model
                                     </span>
                                     <input
@@ -502,12 +550,12 @@ export default function AImode() {
                                         value={llmSettings.model}
                                         onChange={(e) => updateLlmSetting("model", e.target.value)}
                                         placeholder="gpt-4o-mini, openai/gpt-4.1-mini, llama3.1"
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
+                                        className="w-full rounded-2xl border border-[#ffbe4a]/14 bg-[#1f0d09] px-4 py-3 text-sm text-[#fff4de] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
                                     />
                                 </label>
 
                                 <label className="block sm:col-span-2">
-                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#ffd697]">
                                         API Key
                                     </span>
                                     <input
@@ -515,24 +563,24 @@ export default function AImode() {
                                         value={llmSettings.apiKey}
                                         onChange={(e) => updateLlmSetting("apiKey", e.target.value)}
                                         placeholder="Optional for local or self-hosted servers"
-                                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
+                                        className="w-full rounded-2xl border border-[#ffbe4a]/14 bg-[#1f0d09] px-4 py-3 text-sm text-[#fff4de] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
                                     />
                                 </label>
                             </div>
 
-                            <p className="mt-3 text-[11px] leading-relaxed text-gray-500">
+                            <p className="ai-subtle mt-3 text-[11px] leading-relaxed">
                                 Saved in this browser only. Leave fields blank if you want to rely on
                                 {" "}
-                                <code className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-700">CUSTOM_LLM_*</code>
+                                <code className="rounded bg-white/10 px-1 py-0.5 text-[10px] text-[#fff4de]">CUSTOM_LLM_*</code>
                                 {" "}
                                 values from
                                 {" "}
-                                <code className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-700">.env</code>
+                                <code className="rounded bg-white/10 px-1 py-0.5 text-[10px] text-[#fff4de]">.env</code>
                                 .
                             </p>
 
                             {llmSettings.enabled && (
-                                <p className="mt-2 text-[11px] leading-relaxed text-amber-600">
+                                <p className="mt-2 text-[11px] leading-relaxed text-[#ffd697]">
                                     Custom endpoints will answer directly and usually will not return Google-grounded source cards unless your provider adds its own citations.
                                 </p>
                             )}
@@ -553,13 +601,13 @@ export default function AImode() {
 
                     <form
                         onSubmit={handleSubmit}
-                        className="w-full flex items-end gap-2 rounded-2xl shadow-lg px-4 py-3 bg-white/90 backdrop-blur-md ai-search-glow"
+                        className="ai-surface-strong ai-input ai-search-glow w-full flex items-end gap-3 rounded-[28px] px-4 py-4"
                     >
                         <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isLoading}
-                            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition-all hover:border-purple-200 hover:text-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-[#ffbe4a]/14 bg-white/8 text-[#ffe3bb] transition-all hover:border-[#ffbe4a]/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                             title="Attach PDFs, docs, or images"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -569,7 +617,7 @@ export default function AImode() {
 
                         {/* Sparkle icon */}
                         <div className="flex-shrink-0 mb-0.5">
-                            <svg className="w-5 h-5 text-purple-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-5 h-5 text-[#ffbe4a] animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                     d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                             </svg>
@@ -587,7 +635,7 @@ export default function AImode() {
                             placeholder="Ask AdvocateHub AI anything about Indian law..."
                             rows={1}
                             disabled={isLoading}
-                            className="flex-grow outline-none text-sm bg-transparent text-gray-800 placeholder-gray-400 resize-none leading-relaxed disabled:opacity-50"
+                            className="flex-grow resize-none bg-transparent text-sm leading-relaxed text-[#fff4de] outline-none placeholder:text-[#d5a98b] disabled:opacity-50"
                             style={{ minHeight: "28px", maxHeight: "160px" }}
                             autoFocus
                         />
@@ -597,10 +645,9 @@ export default function AImode() {
                             type={isLoading ? "button" : "submit"}
                             onClick={isLoading ? () => abortController.current?.abort() : undefined}
                             disabled={!isLoading && !inputValue.trim()}
-                            className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all
-                                       bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700
-                                       text-white shadow-sm hover:shadow-md
-                                       disabled:opacity-30 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-300"
+                            className="ai-action-primary flex-shrink-0 w-11 h-11 rounded-2xl transition-all
+                                       shadow-sm hover:shadow-md
+                                       disabled:opacity-30 disabled:cursor-not-allowed"
                             title={isLoading ? "Stop generation" : "Send"}
                         >
                             {isLoading ? (
@@ -615,7 +662,7 @@ export default function AImode() {
                         </button>
                     </form>
 
-                    <p className="text-center text-[10px] text-gray-400 mt-1">
+                    <p className="ai-subtle mt-2 text-center text-[10px]">
                         {llmSettings.enabled
                             ? "Using your custom OpenAI-compatible endpoint · Uploads support PDF, DOC, DOCX, TXT, and images"
                             : "Powered by Google Gemini · Grounded with real-time Google Search · Uploads support PDF, DOC, DOCX, TXT, and images"}

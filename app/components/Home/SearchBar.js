@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function SearchBar({ defaultValue = "" }) {
+export default function SearchBar({ defaultValue = "", variant = "hero" }) {
     const [query, setQuery] = useState(defaultValue);
     const router = useRouter();
+    const isCompact = variant === "compact";
+
+    useEffect(() => {
+        setQuery(defaultValue);
+    }, [defaultValue]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -15,34 +20,49 @@ export default function SearchBar({ defaultValue = "" }) {
     };
 
     return (
-        <form onSubmit={handleSearch} className="w-full max-w-[584px] mx-auto flex items-center rounded-full border border-gray-200 hover:shadow-md focus-within:shadow-md transition-shadow px-4 py-3 bg-white h-[46px] group">
-            <svg className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
-            </svg>
-            <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="flex-grow outline-none text-base bg-transparent text-gray-800"
-                autoFocus
-            />
-            {/* Mic Icon */}
-            <div className="flex gap-4 items-center ml-2 flex-shrink-0">
-                <svg className="w-6 h-6 cursor-pointer" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#4285f4" d="m12 15c1.66 0 3-1.31 3-2.97v-7.02c0-1.66-1.34-3.01-3-3.01s-3 1.34-3 3.01v7.02c0 1.66 1.34 2.97 3 2.97z"></path>
-                    <path fill="#34a853" d="m11 18.08h2v3.92h-2z"></path>
-                    <path fill="#fbbc04" d="m7.05 16.87c-1.27-1.33-2.05-2.8-2.05-4.67h2c0 1.45.56 2.42 1.47 3.38v.32l-1.15 1.18z"></path>
-                    <path fill="#ea4335" d="m12 16.93a4.97 5.25 0 0 1 -3.54 -1.55l-1.41 1.49c1.26 1.34 3.02 2.13 4.95 2.13 3.87 0 6.99-2.92 6.99-7h-1.99c0 2.92-2.24 4.93-5 4.93z"></path>
+        <form
+            onSubmit={handleSearch}
+            className={`group flex w-full items-center gap-3 border border-[rgba(118,70,32,0.12)] bg-[rgba(255,252,247,0.92)] shadow-[0_16px_38px_rgba(77,45,20,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_44px_rgba(77,45,20,0.12)] focus-within:-translate-y-0.5 focus-within:border-[rgba(255,110,65,0.22)] focus-within:shadow-[0_24px_48px_rgba(77,45,20,0.12)] ${isCompact ? "rounded-[24px] px-4 py-3" : "rounded-[32px] px-5 py-4 sm:px-6 sm:py-5"}`}
+        >
+            <div className={`flex flex-shrink-0 items-center justify-center rounded-2xl bg-[rgba(255,190,74,0.16)] text-[#d75127] ${isCompact ? "h-11 w-11" : "h-12 w-12"}`}>
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
                 </svg>
-                {/* Lens Icon */}
-                <svg className="w-6 h-6 cursor-pointer" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#4285f4" d="M4 8H2C2 4.69 4.69 2 8 2v2C5.79 4 4 5.79 4 8z" />
-                    <path fill="#ea4335" d="M22 8h-2c0-2.21-1.79-4-4-4V2c3.31 0 6 2.69 6 6z" />
-                    <path fill="#fbbc04" d="M22 22h-2v-2c0-2.21-1.79-4-4-4v-2c3.31 0 6 2.69 6 6z" />
-                    <path fill="#34a853" d="M8 20V22C4.69 22 2 19.31 2 16h2c0 2.21 1.79 4 4 4z" />
-                    <circle fill="#4285f4" cx="12" cy="12" r="3" />
-                    <circle fill="#34a853" cx="16.5" cy="16.5" r="1.5" />
-                </svg>
+            </div>
+
+            <div className="min-w-0 flex-1">
+                {!isCompact && (
+                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8f6a52]">
+                        Search cases, statutes, notices, and legal questions
+                    </p>
+                )}
+
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className={`w-full bg-transparent outline-none text-[#2d1b12] placeholder:text-[#b18868] ${isCompact ? "text-sm sm:text-base" : "text-base sm:text-lg"}`}
+                    placeholder="Try: Supreme Court bail jurisprudence"
+                    autoFocus
+                />
+            </div>
+
+            {!isCompact && (
+                <span className="hidden rounded-full border border-[#f4ddbf] bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#8f6a52] lg:inline-flex">
+                    Press Enter
+                </span>
+            )}
+
+            <div className="flex flex-shrink-0 items-center gap-2">
+                <button
+                    type="submit"
+                    className={`action-primary font-semibold ${isCompact ? "px-4 py-2 text-sm" : "px-5 py-3 text-sm"}`}
+                >
+                    Search
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </button>
             </div>
         </form>
     );

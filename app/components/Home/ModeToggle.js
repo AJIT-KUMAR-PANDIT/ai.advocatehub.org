@@ -8,25 +8,25 @@ export default function ModeToggle() {
     const isAiMode = pathname === "/AImode";
 
     return (
-        <div className="mb-4 flex items-center justify-center gap-2 rounded-full bg-white/50 backdrop-blur-sm p-1 shadow-sm border border-gray-100">
+        <div className="surface-panel inline-flex items-center justify-center gap-2 rounded-full p-1.5">
             <Link
                 href="/"
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all cursor-pointer ${!isAiMode
-                        ? "bg-white text-gray-800 shadow-sm"
-                        : "text-gray-500 hover:text-gray-800"
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${!isAiMode
+                        ? "bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] text-white shadow-sm"
+                        : "text-[#7b5b42] hover:bg-white/70 hover:text-[#2d1b12]"
                     }`}
             >
                 Search
             </Link>
             <Link
                 href="/AImode"
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all cursor-pointer flex items-center gap-1.5 ${isAiMode
-                        ? "bg-white text-gray-800 shadow-sm"
-                        : "text-gray-500 hover:text-gray-800"
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-all flex items-center gap-1.5 ${isAiMode
+                        ? "bg-[#2d1b12] text-[#ffe3bb] shadow-sm"
+                        : "text-[#7b5b42] hover:bg-white/70 hover:text-[#2d1b12]"
                     }`}
             >
                 <svg
-                    className={`h-4 w-4 ${isAiMode ? "text-purple-500" : ""}`}
+                    className={`h-4 w-4 ${isAiMode ? "text-[#ffbe4a]" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
