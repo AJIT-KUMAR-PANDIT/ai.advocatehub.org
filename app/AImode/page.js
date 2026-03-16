@@ -352,36 +352,63 @@ export default function AImode() {
         }
     }
 
+    function startNewChat() {
+        abortController.current?.abort();
+        setMessages([]);
+        setSources([]);
+        setError(null);
+        setPendingAttachments([]);
+        setInputValue("");
+        setShowWelcome(true);
+        setIsLoading(false);
+        inputRef.current?.focus();
+    }
+
+    const providerLabel = llmSettings.enabled ? "Custom endpoint" : "Built-in Gemini";
+    const providerDetail = llmSettings.enabled
+        ? (llmSettings.model.trim() || "OpenAI-compatible model")
+        : "Gemini + Google Search grounding";
+    const activeAttachmentCount = getConversationAttachments(messages, pendingAttachments).length;
+
     // ── Render ────────────────────────────────────────────────
     return (
-        <div className="app-shell flex min-h-screen flex-col bg-ai-gradient transition-all duration-700">
+        <div className="app-shell flex min-h-screen flex-col transition-all duration-700">
             <Header />
 
-            <main className="flex-grow flex w-full max-w-[1100px] flex-col mx-auto px-4 sm:px-6 pt-6 pb-2">
+            <main className="mx-auto flex w-full max-w-6xl flex-grow flex-col px-4 pb-4 pt-6 sm:px-6">
 
                 {/* ── Welcome / Empty state ── */}
                 {showWelcome && (
                     <div className="flex flex-grow items-center justify-center py-4 sm:py-8">
                         <div className="ai-surface-strong w-full rounded-[36px] px-6 py-8 sm:px-8 sm:py-10 lg:px-10">
-                            <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <div className="ai-kicker">
+                                    <span className="accent-dot" />
+                                    AI workspace
+                                </div>
+                                <span className="rounded-full border border-[#f1dfc6] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8f6a52]">
+                                    {providerLabel}
+                                </span>
+                                <span className="rounded-full border border-[#f1dfc6] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8f6a52]">
+                                    PDF, DOCX, TXT, images
+                                </span>
+                            </div>
+
+                            <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
                                 <div>
-                                    <div className="ai-kicker">
-                                        <span className="accent-dot" />
-                                        AI Research Workspace
-                                    </div>
-                                    <div className="mt-6">
+                                    <div className="max-w-[260px]">
                                         <Logo compact />
                                     </div>
-                                    <div className="mt-3">
+                                    <div className="mt-2">
                                         <ModeToggle />
                                     </div>
 
-                                    <h1 className="font-display mt-8 max-w-3xl text-4xl font-semibold leading-tight text-[#fff4de] sm:text-5xl">
-                                        Draft, analyze, and reason from the actual legal record.
+                                    <h1 className="font-display mt-8 max-w-3xl text-4xl font-semibold leading-tight text-[#2d1b12] sm:text-5xl">
+                                        Ask, upload, compare, and draft from the actual legal record.
                                     </h1>
                                     <p className="ai-subtle mt-5 max-w-2xl text-base leading-7">
-                                        Ask about Indian law, attach source documents, compare search-grounded answers,
-                                        and switch between the built-in Gemini workflow or your own OpenAI-compatible endpoint.
+                                        AI mode is now the focused workspace beside search: cleaner, darker, and built for
+                                        long-form reasoning with live grounding, uploaded files, and your own compatible LLM endpoint.
                                     </p>
 
                                     <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -389,7 +416,7 @@ export default function AImode() {
                                             <button
                                                 key={idx}
                                                 onClick={() => handlePromptClick(prompt)}
-                                                className="ai-surface text-left rounded-[24px] px-4 py-4 text-sm font-medium leading-6 text-[#ffe3bb] hover:border-[#ffbe4a]/40 hover:text-white"
+                                                className="ai-surface text-left rounded-[24px] px-4 py-4 text-sm font-medium leading-6 text-[#2d1b12] hover:border-[#ffbe4a]/40 hover:text-[#d75127]"
                                             >
                                                 {prompt}
                                             </button>
@@ -400,10 +427,10 @@ export default function AImode() {
                                 <div className="grid gap-4">
                                     {WELCOME_PANELS.map((panel) => (
                                         <div key={panel.title} className="ai-surface rounded-[28px] p-5">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#ffd697]">
+                                            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8f6a52]">
                                                 Workspace
                                             </p>
-                                            <h2 className="font-display mt-3 text-2xl font-semibold leading-tight text-white">
+                                            <h2 className="font-display mt-3 text-2xl font-semibold leading-tight text-[#2d1b12]">
                                                 {panel.title}
                                             </h2>
                                             <p className="ai-subtle mt-3 text-sm leading-7">
@@ -411,6 +438,19 @@ export default function AImode() {
                                             </p>
                                         </div>
                                     ))}
+
+                                    <div className="ai-surface rounded-[28px] p-5">
+                                        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8f6a52]">
+                                            Current setup
+                                        </p>
+                                        <div className="mt-3 space-y-2 text-sm leading-6 text-[#2d1b12]">
+                                            <p>{providerLabel}</p>
+                                            <p className="ai-subtle">{providerDetail}</p>
+                                            <p className="ai-subtle">
+                                                Upload up to {MAX_ATTACHMENT_COUNT} files, each under {formatFileSize(MAX_ATTACHMENT_SIZE_BYTES)}.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -419,47 +459,86 @@ export default function AImode() {
 
                 {/* ── Chat Messages ── */}
                 {!showWelcome && (
-                    <div
-                        className="ai-surface-strong flex-grow overflow-y-auto rounded-[32px] p-3 sm:p-4"
-                        style={{ minHeight: 0 }}
-                    >
-                        {messages.map((msg) => (
-                            <ChatMessage
-                                key={msg.id}
-                                message={msg}
-                                isStreaming={msg.isStreaming}
-                            />
-                        ))}
+                    <>
+                        <section className="ai-surface mb-4 rounded-[30px] px-5 py-5 sm:px-6">
+                            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                                <div>
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8f6a52]">
+                                        AI mode
+                                    </p>
+                                    <h1 className="font-display mt-2 text-3xl font-semibold leading-tight text-[#2d1b12]">
+                                        Grounded legal workspace
+                                    </h1>
+                                    <p className="ai-subtle mt-2 max-w-2xl text-sm leading-6">
+                                        Chat with the model, inspect sources, upload evidence, and switch providers without leaving the workspace.
+                                    </p>
+                                </div>
 
-                        {/* Error banner */}
-                        {error && (
-                            <div className="mx-2 mb-4 flex items-start gap-2 rounded-[22px] border border-[#ff9d7a]/40 bg-[#5b1d12]/80 p-4 text-sm text-[#ffd4c7]">
-                                <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>{error}</span>
-                            </div>
-                        )}
-
-                        {/* Grounding Sources */}
-                        {sources.length > 0 && (
-                            <div className="mx-2 mb-4">
-                                <p className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#ffd697]">
-                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                    Grounded Sources
-                                </p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {sources.map((src, i) => (
-                                        <SourceCard key={i} source={src} index={i} />
-                                    ))}
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="rounded-full border border-[#f1dfc6] bg-white/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#8f6a52]">
+                                        {providerLabel}
+                                    </span>
+                                    <span className="rounded-full border border-[#f1dfc6] bg-white/80 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#8f6a52]">
+                                        {activeAttachmentCount} files in scope
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={startNewChat}
+                                        className="ai-action-secondary px-4 py-2 text-xs font-semibold hover:text-[#2d1b12]"
+                                    >
+                                        New chat
+                                    </button>
                                 </div>
                             </div>
-                        )}
+                        </section>
 
-                        <div ref={messagesEndRef} />
-                    </div>
+                        <div
+                            className="ai-surface-strong flex-grow overflow-y-auto rounded-[32px] p-3 sm:p-4"
+                            style={{ minHeight: 0 }}
+                        >
+                            {messages.map((msg) => (
+                                <ChatMessage
+                                    key={msg.id}
+                                    message={msg}
+                                    isStreaming={msg.isStreaming}
+                                />
+                            ))}
+
+                            {/* Error banner */}
+                            {error && (
+                                <div className="mx-2 mb-4 flex items-start gap-2 rounded-[22px] border border-[#ffb899] bg-[#fff1e8] p-4 text-sm text-[#b05328]">
+                                    <svg className="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>{error}</span>
+                                </div>
+                            )}
+
+                            {/* Grounding Sources */}
+                            {sources.length > 0 && (
+                                <div className="mx-2 mb-4">
+                                    <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8f6a52]">
+                                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                            Grounded sources
+                                        </p>
+                                        <p className="ai-subtle text-[11px]">
+                                            Review these links alongside the answer.
+                                        </p>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                        {sources.map((src, i) => (
+                                            <SourceCard key={i} source={src} index={i} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div ref={messagesEndRef} />
+                        </div>
+                    </>
                 )}
 
                 {/* ── Input Bar ── */}
@@ -473,30 +552,36 @@ export default function AImode() {
                         className="hidden"
                     />
 
-                    <div className="mb-2 flex items-center justify-between gap-3 px-1">
-                        <button
-                            type="button"
-                            onClick={() => setShowLlmSettings((prev) => !prev)}
-                            className="ai-surface inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold text-[#ffe3bb] hover:bg-white/10"
-                        >
-                            <svg className="h-3.5 w-3.5 text-[#ffbe4a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M7 12h10M10 17h4" />
-                            </svg>
-                            {showLlmSettings ? "Hide LLM settings" : "Use your own LLM"}
-                        </button>
+                    <div className="mb-2 flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setShowLlmSettings((prev) => !prev)}
+                                className="ai-surface inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold text-[#2d1b12] hover:bg-white/95"
+                            >
+                                <svg className="h-3.5 w-3.5 text-[#ffbe4a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M7 12h10M10 17h4" />
+                                </svg>
+                                {showLlmSettings ? "Hide LLM settings" : "Use your own LLM"}
+                            </button>
 
-                        <p className="ai-subtle text-right text-[11px]">
-                            {llmSettings.enabled
-                                ? "Custom endpoint enabled"
-                                : "Using built-in Gemini"}
-                        </p>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                            <span className="rounded-full border border-[#f1dfc6] bg-white/80 px-3 py-1 text-[#8f6a52]">
+                                {providerLabel}
+                            </span>
+                            <span className="rounded-full border border-[#f1dfc6] bg-white/80 px-3 py-1 text-[#8f6a52]">
+                                {activeAttachmentCount} files ready
+                            </span>
+                        </div>
                     </div>
 
                     {showLlmSettings && (
                         <div className="ai-surface-strong mb-3 rounded-[28px] p-5">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                 <div>
-                                    <h2 className="font-display text-2xl font-semibold text-white">Bring your own LLM</h2>
+                                    <h2 className="font-display text-2xl font-semibold text-[#2d1b12]">Bring your own LLM</h2>
                                     <p className="ai-subtle mt-2 max-w-2xl text-sm leading-7">
                                         Connect an OpenAI-compatible endpoint such as OpenAI, OpenRouter, Groq, Ollama, or LM Studio.
                                         When this is off, AdvocateHub keeps using Gemini with Google Search grounding.
@@ -506,13 +591,13 @@ export default function AImode() {
                                 <button
                                     type="button"
                                     onClick={resetLlmSettings}
-                                    className="ai-action-secondary self-start px-4 py-2 text-xs font-semibold hover:text-white"
+                                    className="ai-action-secondary self-start px-4 py-2 text-xs font-semibold hover:text-[#2d1b12]"
                                 >
                                     Clear saved values
                                 </button>
                             </div>
 
-                            <label className="mt-5 flex items-start gap-3 rounded-[24px] border border-[#ffbe4a]/16 bg-white/6 px-4 py-4">
+                            <label className="mt-5 flex items-start gap-3 rounded-[24px] border border-[#f1dfc6] bg-white/78 px-4 py-4">
                                 <input
                                     type="checkbox"
                                     checked={llmSettings.enabled}
@@ -520,7 +605,7 @@ export default function AImode() {
                                     className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#ffbe4a] focus:ring-[#ffbe4a]"
                                 />
                                 <div>
-                                    <p className="text-sm font-semibold text-white">Use my own endpoint for chat</p>
+                                    <p className="text-sm font-semibold text-[#2d1b12]">Use my own endpoint for chat</p>
                                     <p className="ai-subtle mt-1 text-sm leading-6">
                                         Turn this on to send chat requests through your own provider instead of the built-in Gemini setup.
                                     </p>
@@ -529,7 +614,7 @@ export default function AImode() {
 
                             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <label className="block">
-                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#ffd697]">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#8f6a52]">
                                         Endpoint URL
                                     </span>
                                     <input
@@ -537,12 +622,12 @@ export default function AImode() {
                                         value={llmSettings.url}
                                         onChange={(e) => updateLlmSetting("url", e.target.value)}
                                         placeholder="http://localhost:11434/v1 or https://openrouter.ai/api/v1"
-                                        className="w-full rounded-2xl border border-[#ffbe4a]/14 bg-[#1f0d09] px-4 py-3 text-sm text-[#fff4de] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
+                                        className="w-full rounded-2xl border border-[#f1dfc6] bg-white/92 px-4 py-3 text-sm text-[#2d1b12] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
                                     />
                                 </label>
 
                                 <label className="block">
-                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#ffd697]">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#8f6a52]">
                                         Model
                                     </span>
                                     <input
@@ -550,12 +635,12 @@ export default function AImode() {
                                         value={llmSettings.model}
                                         onChange={(e) => updateLlmSetting("model", e.target.value)}
                                         placeholder="gpt-4o-mini, openai/gpt-4.1-mini, llama3.1"
-                                        className="w-full rounded-2xl border border-[#ffbe4a]/14 bg-[#1f0d09] px-4 py-3 text-sm text-[#fff4de] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
+                                        className="w-full rounded-2xl border border-[#f1dfc6] bg-white/92 px-4 py-3 text-sm text-[#2d1b12] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
                                     />
                                 </label>
 
                                 <label className="block sm:col-span-2">
-                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#ffd697]">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-[#8f6a52]">
                                         API Key
                                     </span>
                                     <input
@@ -563,7 +648,7 @@ export default function AImode() {
                                         value={llmSettings.apiKey}
                                         onChange={(e) => updateLlmSetting("apiKey", e.target.value)}
                                         placeholder="Optional for local or self-hosted servers"
-                                        className="w-full rounded-2xl border border-[#ffbe4a]/14 bg-[#1f0d09] px-4 py-3 text-sm text-[#fff4de] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
+                                        className="w-full rounded-2xl border border-[#f1dfc6] bg-white/92 px-4 py-3 text-sm text-[#2d1b12] outline-none transition-colors focus:border-[#ffbe4a] focus:ring-2 focus:ring-[#ffbe4a]/14"
                                     />
                                 </label>
                             </div>
@@ -571,16 +656,16 @@ export default function AImode() {
                             <p className="ai-subtle mt-3 text-[11px] leading-relaxed">
                                 Saved in this browser only. Leave fields blank if you want to rely on
                                 {" "}
-                                <code className="rounded bg-white/10 px-1 py-0.5 text-[10px] text-[#fff4de]">CUSTOM_LLM_*</code>
+                                <code className="rounded bg-[#fff1dd] px-1 py-0.5 text-[10px] text-[#a3471d]">CUSTOM_LLM_*</code>
                                 {" "}
                                 values from
                                 {" "}
-                                <code className="rounded bg-white/10 px-1 py-0.5 text-[10px] text-[#fff4de]">.env</code>
+                                <code className="rounded bg-[#fff1dd] px-1 py-0.5 text-[10px] text-[#a3471d]">.env</code>
                                 .
                             </p>
 
                             {llmSettings.enabled && (
-                                <p className="mt-2 text-[11px] leading-relaxed text-[#ffd697]">
+                                <p className="mt-2 text-[11px] leading-relaxed text-[#8f6a52]">
                                     Custom endpoints will answer directly and usually will not return Google-grounded source cards unless your provider adds its own citations.
                                 </p>
                             )}
@@ -588,26 +673,31 @@ export default function AImode() {
                     )}
 
                     {pendingAttachments.length > 0 && (
-                        <div className="mb-3 flex flex-wrap gap-2 px-1">
-                            {pendingAttachments.map((attachment) => (
-                                <AttachmentChip
-                                    key={attachment.id}
-                                    attachment={attachment}
-                                    onRemove={removePendingAttachment}
-                                />
-                            ))}
+                        <div className="mb-3 px-1">
+                            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8f6a52]">
+                                Pending uploads
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                {pendingAttachments.map((attachment) => (
+                                    <AttachmentChip
+                                        key={attachment.id}
+                                        attachment={attachment}
+                                        onRemove={removePendingAttachment}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     )}
 
                     <form
                         onSubmit={handleSubmit}
-                        className="ai-surface-strong ai-input ai-search-glow w-full flex items-end gap-3 rounded-[28px] px-4 py-4"
+                        className="ai-surface-strong ai-input ai-search-glow w-full flex items-end gap-3 rounded-[30px] px-4 py-4"
                     >
                         <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isLoading}
-                            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-[#ffbe4a]/14 bg-white/8 text-[#ffe3bb] transition-all hover:border-[#ffbe4a]/40 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-[#f1dfc6] bg-white/82 text-[#8f6a52] transition-all hover:border-[#ffbe4a]/40 hover:text-[#2d1b12] disabled:cursor-not-allowed disabled:opacity-50"
                             title="Attach PDFs, docs, or images"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -616,8 +706,8 @@ export default function AImode() {
                         </button>
 
                         {/* Sparkle icon */}
-                        <div className="flex-shrink-0 mb-0.5">
-                            <svg className="w-5 h-5 text-[#ffbe4a] animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div className="mb-0.5 flex-shrink-0">
+                            <svg className="h-5 w-5 animate-pulse text-[#d75127]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                     d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                             </svg>
@@ -635,7 +725,7 @@ export default function AImode() {
                             placeholder="Ask AdvocateHub AI anything about Indian law..."
                             rows={1}
                             disabled={isLoading}
-                            className="flex-grow resize-none bg-transparent text-sm leading-relaxed text-[#fff4de] outline-none placeholder:text-[#d5a98b] disabled:opacity-50"
+                            className="flex-grow resize-none bg-transparent text-sm leading-relaxed text-[#2d1b12] outline-none placeholder:text-[#b18868] disabled:opacity-50"
                             style={{ minHeight: "28px", maxHeight: "160px" }}
                             autoFocus
                         />
@@ -644,7 +734,7 @@ export default function AImode() {
                         <button
                             type={isLoading ? "button" : "submit"}
                             onClick={isLoading ? () => abortController.current?.abort() : undefined}
-                            disabled={!isLoading && !inputValue.trim()}
+                            disabled={!isLoading && !inputValue.trim() && pendingAttachments.length === 0}
                             className="ai-action-primary flex-shrink-0 w-11 h-11 rounded-2xl transition-all
                                        shadow-sm hover:shadow-md
                                        disabled:opacity-30 disabled:cursor-not-allowed"
