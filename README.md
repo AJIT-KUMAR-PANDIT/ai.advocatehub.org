@@ -34,6 +34,23 @@ AI chat uploads are also supported for:
 - Plain text files (`.txt`)
 - Images
 
+The search API can use Google Custom Search, Bing Custom Search, or DuckDuckGo search results, based on env configuration.
+
+```bash
+CUSTOM_SEARCH_PRIORITY=google
+
+GOOGLE_API_KEY=
+GOOGLE_SEARCH_CX=
+
+BING_SEARCH_API_KEY=
+BING_CUSTOM_CONFIG_ID=
+
+DUCKDUCKGO_SEARCH_BASE_URL=https://html.duckduckgo.com/html/
+```
+
+Set `CUSTOM_SEARCH_PRIORITY=bing`, `google`, or `duckduckgo` to prefer that provider. If the preferred provider is missing its required env vars, the app falls back to another configured provider, then to DuckDuckGo, then to mock results.
+Bing and DuckDuckGo results are exposed as internal `https://advocatehub.org/go/...` links in the UI and redirect immediately to the real target URL when opened.
+
 Optional environment variables for a custom provider:
 
 ```bash

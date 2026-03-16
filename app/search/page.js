@@ -15,6 +15,16 @@ function SearchResults() {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [meta, setMeta] = useState(null);
+    const providerLabel = meta?.provider === "bing"
+        ? "Bing Custom Search"
+        : meta?.provider === "google"
+            ? "Google Custom Search"
+            : meta?.provider === "duckduckgo"
+                ? "DuckDuckGo Search"
+                : meta?.provider === "mock"
+                    ? "Mock results"
+                    : "";
 
     useEffect(() => {
         if (!query) {
@@ -28,8 +38,10 @@ function SearchResults() {
             try {
                 const res = await axios.get(`/api/search?q=${encodeURIComponent(query)}`);
                 setResults(res.data.items || []);
+                setMeta(res.data.meta || null);
             } catch (err) {
                 setError(err.response?.data?.error || err.message || "Failed to fetch results");
+                setMeta(null);
             } finally {
                 setLoading(false);
             }
@@ -46,7 +58,16 @@ function SearchResults() {
                 {/* Stats */}
                 {!loading && !error && results.length > 0 && (
                     <div className="text-[#70757a] text-sm mb-6">
-                        About {results.length} results (mock speed 0.82 seconds)
+                        About {meta?.formattedTotalResults || results.length} results
+                        {meta?.searchTime ? ` (${meta.searchTime} seconds)` : ""}
+                        {providerLabel ? ` · ${providerLabel}` : ""}
+                    </div>
+                )}
+
+                {!loading && !error && meta?.isMock && meta?.attemptedProviders?.length > 0 && (
+                    <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        Live search is currently unavailable, so AdvocateHub is showing fallback results.
+                        {meta.failures?.length ? ` Tried: ${meta.failures.map((failure) => failure.provider).join(", ")}.` : ""}
                     </div>
                 )}
 
