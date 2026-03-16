@@ -6,6 +6,7 @@ import axios from "axios";
 import SearchHeader from "./SearchHeader";
 import ResultItem from "./ResultItem";
 import ResultSkeleton from "./ResultSkeleton";
+import SearchSummaryCard from "./SearchSummaryCard";
 import SearchSystemDashboard from "../Shared/SearchSystemDashboard";
 import Footer from "../Home/Footer";
 
@@ -17,6 +18,9 @@ export default function SearchResultsClient({ dashboardSnapshot }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [meta, setMeta] = useState(null);
+    const [summary, setSummary] = useState(null);
+    const [summaryLoading, setSummaryLoading] = useState(false);
+    const [summaryError, setSummaryError] = useState(null);
     const providerLabel = meta?.provider === "bing"
         ? "Bing Custom Search"
         : meta?.provider === "google"
@@ -33,25 +37,68 @@ export default function SearchResultsClient({ dashboardSnapshot }) {
             setError(null);
             setMeta(null);
             setResults([]);
+            setSummary(null);
+            setSummaryLoading(false);
+            setSummaryError(null);
             return;
         }
+
+        const controller = new AbortController();
 
         const fetchResults = async () => {
             setLoading(true);
             setError(null);
+            setSummary(null);
+            setSummaryLoading(false);
+            setSummaryError(null);
+
             try {
-                const res = await axios.get(`/api/search?q=${encodeURIComponent(query)}`);
-                setResults(res.data.items || []);
+                const res = await axios.get(`/api/search?q=${encodeURIComponent(query)}`, {
+                    signal: controller.signal,
+                });
+                const items = res.data.items || [];
+
+                setResults(items);
                 setMeta(res.data.meta || null);
+                setLoading(false);
+
+                if (items.length > 0) {
+                    setSummaryLoading(true);
+
+                    try {
+                        const summaryRes = await axios.post(
+                            "/api/search/summary",
+                            {
+                                query,
+                                results: items,
+                            },
+                            { signal: controller.signal }
+                        );
+
+                        setSummary(summaryRes.data);
+                    } catch (summaryErr) {
+                        if (!axios.isCancel(summaryErr)) {
+                            setSummaryError(
+                                summaryErr.response?.data?.error || summaryErr.message || "Failed to generate AI summary"
+                            );
+                        }
+                    } finally {
+                        setSummaryLoading(false);
+                    }
+                }
             } catch (err) {
-                setError(err.response?.data?.error || err.message || "Failed to fetch results");
-                setMeta(null);
+                if (!axios.isCancel(err)) {
+                    setError(err.response?.data?.error || err.message || "Failed to fetch results");
+                    setMeta(null);
+                }
             } finally {
                 setLoading(false);
             }
         };
 
         fetchResults();
+
+        return () => controller.abort();
     }, [query]);
 
     return (
@@ -112,6 +159,16 @@ export default function SearchResultsClient({ dashboardSnapshot }) {
                         )}
 
                         <div className="space-y-4">
+                            {!error && (
+                                <SearchSummaryCard
+                                    query={query}
+                                    summary={summary}
+                                    loading={summaryLoading}
+                                    error={summaryError}
+                                    providerLabel={providerLabel}
+                                />
+                            )}
+
                             {loading ? (
                                 <>
                                     <ResultSkeleton />
