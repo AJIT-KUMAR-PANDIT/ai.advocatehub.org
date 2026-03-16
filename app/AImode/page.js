@@ -6,7 +6,16 @@ import Logo from "../components/Home/Logo";
 import ModeToggle from "../components/Home/ModeToggle";
 import Footer from "../components/Home/Footer";
 import ChatMessage from "../components/AImode/ChatMessage";
+import AttachmentChip from "../components/AImode/AttachmentChip";
 import SourceCard from "../components/AImode/SourceCard";
+import {
+    ATTACHMENT_ACCEPT,
+    formatFileSize,
+    getAttachmentMimeType,
+    isSupportedAttachment,
+    MAX_ATTACHMENT_COUNT,
+    MAX_ATTACHMENT_SIZE_BYTES,
+} from "@/lib/attachmentUtils";
 
 // Stable incrementing ID — avoids Date.now() collisions when two messages
 // are created in the same millisecond.
@@ -30,6 +39,24 @@ const DEFAULT_LLM_SETTINGS = {
     model: "",
 };
 
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            if (typeof reader.result === "string") {
+                resolve(reader.result);
+                return;
+            }
+
+            reject(new Error(`Failed to read ${file.name}.`));
+        };
+
+        reader.onerror = () => reject(new Error(`Failed to read ${file.name}.`));
+        reader.readAsDataURL(file);
+    });
+}
+
 export default function AImode() {
     const [messages,    setMessages]    = useState([]);
     const [inputValue,  setInputValue]  = useState("");
@@ -37,12 +64,14 @@ export default function AImode() {
     const [sources,     setSources]     = useState([]);
     const [showWelcome, setShowWelcome] = useState(true);
     const [error,       setError]       = useState(null);
+    const [pendingAttachments, setPendingAttachments] = useState([]);
     const [showLlmSettings, setShowLlmSettings] = useState(false);
     const [llmSettings, setLlmSettings] = useState(() => ({ ...DEFAULT_LLM_SETTINGS }));
     const [settingsLoaded, setSettingsLoaded] = useState(false);
 
     const messagesEndRef  = useRef(null);
     const inputRef        = useRef(null);
+    const fileInputRef    = useRef(null);
     const abortController = useRef(null);
     // Keep a ref to current messages so async functions always have the latest value
     const messagesRef     = useRef([]);
@@ -95,6 +124,73 @@ export default function AImode() {
         setLlmSettings({ ...DEFAULT_LLM_SETTINGS });
     }
 
+    function getConversationAttachments(msgs, nextAttachments = []) {
+        const merged = [
+            ...msgs.flatMap((message) => (
+                message.role === "user" && Array.isArray(message.attachments)
+                    ? message.attachments
+                    : []
+            )),
+            ...nextAttachments,
+        ];
+
+        return merged.slice(-MAX_ATTACHMENT_COUNT).map((attachment) => ({
+            id:       attachment.id,
+            name:     attachment.name,
+            mimeType: attachment.mimeType,
+            size:     attachment.size,
+            dataUrl:  attachment.dataUrl,
+        }));
+    }
+
+    function removePendingAttachment(attachmentId) {
+        setPendingAttachments((prev) => prev.filter((attachment) => attachment.id !== attachmentId));
+    }
+
+    async function handleAttachmentSelect(e) {
+        const files = Array.from(e.target.files || []);
+        e.target.value = "";
+
+        if (files.length === 0) {
+            return;
+        }
+
+        try {
+            const selectedAttachments = await Promise.all(files.map(async (file, index) => {
+                if (!isSupportedAttachment({ mimeType: file.type, name: file.name })) {
+                    throw new Error(`Unsupported file type for ${file.name}. Please upload PDF, DOC, DOCX, TXT, or image files.`);
+                }
+
+                if (file.size > MAX_ATTACHMENT_SIZE_BYTES) {
+                    throw new Error(`${file.name} is too large. Keep each file under ${formatFileSize(MAX_ATTACHMENT_SIZE_BYTES)}.`);
+                }
+
+                const mimeType = getAttachmentMimeType({ mimeType: file.type, name: file.name });
+                const dataUrl  = await readFileAsDataUrl(file);
+
+                return {
+                    id:       `${file.name}-${file.size}-${Date.now()}-${index}`,
+                    name:     file.name,
+                    mimeType,
+                    size:     file.size,
+                    dataUrl,
+                };
+            }));
+
+            const existingAttachments = getConversationAttachments(messagesRef.current, pendingAttachments);
+            const totalAttachments    = existingAttachments.length + selectedAttachments.length;
+
+            if (totalAttachments > MAX_ATTACHMENT_COUNT) {
+                throw new Error(`You can keep up to ${MAX_ATTACHMENT_COUNT} uploaded files in the active chat.`);
+            }
+
+            setError(null);
+            setPendingAttachments((prev) => [...prev, ...selectedAttachments]);
+        } catch (err) {
+            setError(err.message || "Unable to attach files right now.");
+        }
+    }
+
     // Build provider-compatible history from message array
     function buildHistory(msgs) {
         return msgs
@@ -103,7 +199,7 @@ export default function AImode() {
     }
 
     // ── Stream the AI response ────────────────────────────────
-    async function startStream(userText, signal) {
+    async function startStream(userText, signal, attachments) {
         const aiMsgId = nextId();
 
         // Add empty AI placeholder
@@ -129,6 +225,7 @@ export default function AImode() {
                         apiKey:  llmSettings.apiKey.trim(),
                         model:   llmSettings.model.trim(),
                     },
+                    attachments,
                 }),
                 signal,
             });
@@ -193,26 +290,35 @@ export default function AImode() {
     // ── Send a message ────────────────────────────────────────
     function sendMessage(text) {
         const userText = text.trim();
-        if (!userText || isLoading) return;
+        const attachmentsForMessage = pendingAttachments;
+        const promptText = userText || "Analyze the attached files and answer based on them.";
+
+        if ((!userText && attachmentsForMessage.length === 0) || isLoading) return;
 
         // Cancel any ongoing generation
         abortController.current?.abort();
         abortController.current = new AbortController();
         const signal = abortController.current.signal;
+        const conversationAttachments = getConversationAttachments(messagesRef.current, attachmentsForMessage);
 
         setError(null);
         setSources([]);
         setShowWelcome(false);
         setIsLoading(true);
         setInputValue("");
+        setPendingAttachments([]);
 
         // Add user message
-        const userMsg = { id: nextId(), role: "user", text: userText };
+        const userMsg = {
+            id: nextId(),
+            role: "user",
+            text: userText,
+            attachments: attachmentsForMessage,
+        };
         setMessages((prev) => [...prev, userMsg]);
 
-        // Start the AI stream — messagesRef will be updated by useEffect before startStream reads it,
-        // but we pass userText directly so the prompt is always correct.
-        startStream(userText, signal);
+        // The current prompt and newly attached files are sent explicitly on the request.
+        startStream(promptText, signal, conversationAttachments);
     }
 
     function handleSubmit(e) {
@@ -245,7 +351,7 @@ export default function AImode() {
                         <ModeToggle />
 
                         <p className="text-gray-500 text-sm mt-2 mb-6 text-center max-w-md">
-                            Ask anything about Indian law with the built-in Gemini setup, or connect your own OpenAI-compatible LLM below.
+                            Ask anything about Indian law, upload PDFs, docs, or images, and switch between the built-in Gemini setup or your own OpenAI-compatible LLM.
                         </p>
 
                         {/* Suggested Prompts — click to send immediately */}
@@ -310,6 +416,15 @@ export default function AImode() {
 
                 {/* ── Input Bar ── */}
                 <div className="sticky bottom-0 pb-4 pt-2 bg-transparent">
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept={ATTACHMENT_ACCEPT}
+                        multiple
+                        onChange={handleAttachmentSelect}
+                        className="hidden"
+                    />
+
                     <div className="mb-2 flex items-center justify-between gap-3 px-1">
                         <button
                             type="button"
@@ -424,10 +539,34 @@ export default function AImode() {
                         </div>
                     )}
 
+                    {pendingAttachments.length > 0 && (
+                        <div className="mb-3 flex flex-wrap gap-2 px-1">
+                            {pendingAttachments.map((attachment) => (
+                                <AttachmentChip
+                                    key={attachment.id}
+                                    attachment={attachment}
+                                    onRemove={removePendingAttachment}
+                                />
+                            ))}
+                        </div>
+                    )}
+
                     <form
                         onSubmit={handleSubmit}
                         className="w-full flex items-end gap-2 rounded-2xl shadow-lg px-4 py-3 bg-white/90 backdrop-blur-md ai-search-glow"
                     >
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isLoading}
+                            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition-all hover:border-purple-200 hover:text-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
+                            title="Attach PDFs, docs, or images"
+                        >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828L18 9.828a4 4 0 10-5.657-5.657L5.757 10.757a6 6 0 108.486 8.486L20 13" />
+                            </svg>
+                        </button>
+
                         {/* Sparkle icon */}
                         <div className="flex-shrink-0 mb-0.5">
                             <svg className="w-5 h-5 text-purple-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -478,8 +617,8 @@ export default function AImode() {
 
                     <p className="text-center text-[10px] text-gray-400 mt-1">
                         {llmSettings.enabled
-                            ? "Using your custom OpenAI-compatible endpoint"
-                            : "Powered by Google Gemini · Grounded with real-time Google Search"}
+                            ? "Using your custom OpenAI-compatible endpoint · Uploads support PDF, DOC, DOCX, TXT, and images"
+                            : "Powered by Google Gemini · Grounded with real-time Google Search · Uploads support PDF, DOC, DOCX, TXT, and images"}
                     </p>
                 </div>
 

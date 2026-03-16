@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import AttachmentChip from "./AttachmentChip";
 
 /**
  * Renders markdown-like text: **bold**, *italic*, `code`, ## headings, - bullets
@@ -76,6 +77,7 @@ function inlineFormat(text) {
 export default function ChatMessage({ message, isStreaming }) {
     const isUser = message.role === "user";
     const endRef  = useRef(null);
+    const hasAttachments = Array.isArray(message.attachments) && message.attachments.length > 0;
 
     useEffect(() => {
         if (isStreaming) endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -85,7 +87,21 @@ export default function ChatMessage({ message, isStreaming }) {
         return (
             <div className="flex justify-end mb-4 px-2">
                 <div className="max-w-[75%] bg-gradient-to-br from-purple-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm">
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                    {hasAttachments && (
+                        <div className="mb-2 flex flex-wrap justify-end gap-2">
+                            {message.attachments.map((attachment) => (
+                                <AttachmentChip
+                                    key={attachment.id}
+                                    attachment={attachment}
+                                    tone="user"
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {message.text && (
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                    )}
                 </div>
             </div>
         );

@@ -27,6 +27,13 @@ The AI chat mode now supports two ways to choose an LLM:
 - Built-in Gemini configuration from `.env`
 - Your own OpenAI-compatible endpoint from the AI chat settings panel
 
+AI chat uploads are also supported for:
+
+- PDF files
+- Word documents (`.doc`, `.docx`)
+- Plain text files (`.txt`)
+- Images
+
 Optional environment variables for a custom provider:
 
 ```bash
