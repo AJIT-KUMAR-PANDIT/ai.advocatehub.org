@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import Header from "../components/Home/Header";
 import Logo from "../components/Home/Logo";
 import ModeToggle from "../components/Home/ModeToggle";
@@ -22,6 +22,14 @@ const SUGGESTED_PROMPTS = [
     "What is a PIL and how to file one?",
 ];
 
+const LLM_SETTINGS_STORAGE_KEY = "advocatehub.customLlmSettings";
+const DEFAULT_LLM_SETTINGS = {
+    enabled: false,
+    url: "",
+    apiKey: "",
+    model: "",
+};
+
 export default function AImode() {
     const [messages,    setMessages]    = useState([]);
     const [inputValue,  setInputValue]  = useState("");
@@ -29,6 +37,9 @@ export default function AImode() {
     const [sources,     setSources]     = useState([]);
     const [showWelcome, setShowWelcome] = useState(true);
     const [error,       setError]       = useState(null);
+    const [showLlmSettings, setShowLlmSettings] = useState(false);
+    const [llmSettings, setLlmSettings] = useState(() => ({ ...DEFAULT_LLM_SETTINGS }));
+    const [settingsLoaded, setSettingsLoaded] = useState(false);
 
     const messagesEndRef  = useRef(null);
     const inputRef        = useRef(null);
@@ -41,12 +52,50 @@ export default function AImode() {
         messagesRef.current = messages;
     }, [messages]);
 
+    useEffect(() => {
+        try {
+            const savedSettings = window.localStorage.getItem(LLM_SETTINGS_STORAGE_KEY);
+
+            if (savedSettings) {
+                const parsed = JSON.parse(savedSettings);
+                setLlmSettings({
+                    enabled: Boolean(parsed?.enabled),
+                    url:     typeof parsed?.url === "string" ? parsed.url : (parsed?.baseUrl || ""),
+                    apiKey:  typeof parsed?.apiKey === "string" ? parsed.apiKey : "",
+                    model:   typeof parsed?.model === "string" ? parsed.model : "",
+                });
+            }
+        } catch (err) {
+            console.warn("[AI chat] Failed to load custom LLM settings:", err);
+        } finally {
+            setSettingsLoaded(true);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!settingsLoaded) return;
+
+        try {
+            window.localStorage.setItem(LLM_SETTINGS_STORAGE_KEY, JSON.stringify(llmSettings));
+        } catch (err) {
+            console.warn("[AI chat] Failed to save custom LLM settings:", err);
+        }
+    }, [llmSettings, settingsLoaded]);
+
     // Auto-scroll to bottom whenever messages change
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Build Gemini-compatible history from message array
+    function updateLlmSetting(field, value) {
+        setLlmSettings((prev) => ({ ...prev, [field]: value }));
+    }
+
+    function resetLlmSettings() {
+        setLlmSettings({ ...DEFAULT_LLM_SETTINGS });
+    }
+
+    // Build provider-compatible history from message array
     function buildHistory(msgs) {
         return msgs
             .filter((m) => m.role === "user" || (m.role === "model" && m.text && !m.isStreaming))
@@ -72,8 +121,14 @@ export default function AImode() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     message: userText,
-                    // history excludes the very last user message (it's the current prompt)
-                    history: history.slice(0, -1),
+                    // The current prompt is sent separately as "message", so history only needs prior turns.
+                    history,
+                    llmConfig: {
+                        enabled: llmSettings.enabled,
+                        url:     llmSettings.url.trim(),
+                        apiKey:  llmSettings.apiKey.trim(),
+                        model:   llmSettings.model.trim(),
+                    },
                 }),
                 signal,
             });
@@ -136,7 +191,7 @@ export default function AImode() {
     }
 
     // ── Send a message ────────────────────────────────────────
-    const sendMessage = useCallback((text) => {
+    function sendMessage(text) {
         const userText = text.trim();
         if (!userText || isLoading) return;
 
@@ -158,8 +213,7 @@ export default function AImode() {
         // Start the AI stream — messagesRef will be updated by useEffect before startStream reads it,
         // but we pass userText directly so the prompt is always correct.
         startStream(userText, signal);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLoading]);
+    }
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -191,7 +245,7 @@ export default function AImode() {
                         <ModeToggle />
 
                         <p className="text-gray-500 text-sm mt-2 mb-6 text-center max-w-md">
-                            Ask me anything about Indian law — grounded with real-time Google Search and Gemini AI.
+                            Ask anything about Indian law with the built-in Gemini setup, or connect your own OpenAI-compatible LLM below.
                         </p>
 
                         {/* Suggested Prompts — click to send immediately */}
@@ -256,6 +310,120 @@ export default function AImode() {
 
                 {/* ── Input Bar ── */}
                 <div className="sticky bottom-0 pb-4 pt-2 bg-transparent">
+                    <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                        <button
+                            type="button"
+                            onClick={() => setShowLlmSettings((prev) => !prev)}
+                            className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm backdrop-blur-md transition-all hover:bg-white"
+                        >
+                            <svg className="h-3.5 w-3.5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M7 12h10M10 17h4" />
+                            </svg>
+                            {showLlmSettings ? "Hide LLM settings" : "Use your own LLM"}
+                        </button>
+
+                        <p className="text-[11px] text-right text-gray-500">
+                            {llmSettings.enabled
+                                ? "Custom endpoint enabled"
+                                : "Using built-in Gemini"}
+                        </p>
+                    </div>
+
+                    {showLlmSettings && (
+                        <div className="mb-3 rounded-2xl border border-white/70 bg-white/92 p-4 shadow-lg backdrop-blur-md">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                <div>
+                                    <h2 className="text-sm font-semibold text-gray-900">Bring your own LLM</h2>
+                                    <p className="mt-1 max-w-2xl text-xs leading-relaxed text-gray-500">
+                                        Connect an OpenAI-compatible endpoint such as OpenAI, OpenRouter, Groq, Ollama, or LM Studio.
+                                        When this is off, AdvocateHub keeps using Gemini with Google Search grounding.
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={resetLlmSettings}
+                                    className="self-start rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-red-200 hover:text-red-600"
+                                >
+                                    Clear saved values
+                                </button>
+                            </div>
+
+                            <label className="mt-4 flex items-start gap-3 rounded-2xl border border-purple-100 bg-purple-50/70 px-4 py-3">
+                                <input
+                                    type="checkbox"
+                                    checked={llmSettings.enabled}
+                                    onChange={(e) => updateLlmSetting("enabled", e.target.checked)}
+                                    className="mt-0.5 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                />
+                                <div>
+                                    <p className="text-sm font-medium text-gray-900">Use my own endpoint for chat</p>
+                                    <p className="mt-1 text-xs leading-relaxed text-gray-500">
+                                        Turn this on to send chat requests through your own provider instead of the built-in Gemini setup.
+                                    </p>
+                                </div>
+                            </label>
+
+                            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <label className="block">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Endpoint URL
+                                    </span>
+                                    <input
+                                        type="text"
+                                        value={llmSettings.url}
+                                        onChange={(e) => updateLlmSetting("url", e.target.value)}
+                                        placeholder="http://localhost:11434/v1 or https://openrouter.ai/api/v1"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
+                                    />
+                                </label>
+
+                                <label className="block">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Model
+                                    </span>
+                                    <input
+                                        type="text"
+                                        value={llmSettings.model}
+                                        onChange={(e) => updateLlmSetting("model", e.target.value)}
+                                        placeholder="gpt-4o-mini, openai/gpt-4.1-mini, llama3.1"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
+                                    />
+                                </label>
+
+                                <label className="block sm:col-span-2">
+                                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        API Key
+                                    </span>
+                                    <input
+                                        type="password"
+                                        value={llmSettings.apiKey}
+                                        onChange={(e) => updateLlmSetting("apiKey", e.target.value)}
+                                        placeholder="Optional for local or self-hosted servers"
+                                        className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition-colors focus:border-purple-300 focus:ring-2 focus:ring-purple-100"
+                                    />
+                                </label>
+                            </div>
+
+                            <p className="mt-3 text-[11px] leading-relaxed text-gray-500">
+                                Saved in this browser only. Leave fields blank if you want to rely on
+                                {" "}
+                                <code className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-700">CUSTOM_LLM_*</code>
+                                {" "}
+                                values from
+                                {" "}
+                                <code className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-700">.env</code>
+                                .
+                            </p>
+
+                            {llmSettings.enabled && (
+                                <p className="mt-2 text-[11px] leading-relaxed text-amber-600">
+                                    Custom endpoints will answer directly and usually will not return Google-grounded source cards unless your provider adds its own citations.
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     <form
                         onSubmit={handleSubmit}
                         className="w-full flex items-end gap-2 rounded-2xl shadow-lg px-4 py-3 bg-white/90 backdrop-blur-md ai-search-glow"
@@ -309,7 +477,9 @@ export default function AImode() {
                     </form>
 
                     <p className="text-center text-[10px] text-gray-400 mt-1">
-                        Powered by Google Gemini · Grounded with real-time Google Search
+                        {llmSettings.enabled
+                            ? "Using your custom OpenAI-compatible endpoint"
+                            : "Powered by Google Gemini · Grounded with real-time Google Search"}
                     </p>
                 </div>
 

@@ -20,6 +20,26 @@ You can start editing the page by modifying `app/page.js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## LLM configuration
+
+The AI chat mode now supports two ways to choose an LLM:
+
+- Built-in Gemini configuration from `.env`
+- Your own OpenAI-compatible endpoint from the AI chat settings panel
+
+Optional environment variables for a custom provider:
+
+```bash
+CUSTOM_LLM_URL=
+CUSTOM_LLM_API_KEY=
+CUSTOM_LLM_MODEL=
+CUSTOM_LLM_SYSTEM_PROMPT=
+CUSTOM_LLM_TEMPERATURE=0.7
+CUSTOM_LLM_MAX_TOKENS=2048
+```
+
+Examples of compatible endpoints include OpenAI, OpenRouter, Groq, Ollama, and LM Studio. If you enable the custom endpoint in the UI, the app will use that for chat; otherwise it keeps using Gemini with Google Search grounding.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
