@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff4de;
+  --background: #fff7ef;
   --foreground: #2d1b12;
-  --surface: rgba(255, 248, 236, 0.8);
-  --surface-strong: rgba(255, 251, 243, 0.92);
-  --border: rgba(118, 70, 32, 0.12);
-  --border-strong: rgba(118, 70, 32, 0.18);
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --border: rgba(118, 70, 32, 0.1);
+  --border-strong: rgba(118, 70, 32, 0.15);
   --muted: #7b5b42;
   --accent: #ff6e41;
   --accent-dark: #d75127;
@@ -34,9 +34,9 @@ body {
   font-family: var(--font-geist-sans), sans-serif;
   min-height: 100vh;
   background-image:
-    radial-gradient(circle at 12% 18%, rgba(255, 190, 74, 0.24), transparent 24%),
-    radial-gradient(circle at 84% 10%, rgba(255, 110, 65, 0.18), transparent 18%),
-    linear-gradient(180deg, #fff9ef 0%, #fff0d7 42%, #ffe5c5 100%);
+    radial-gradient(circle at 12% 14%, rgba(255, 190, 74, 0.12), transparent 20%),
+    radial-gradient(circle at 88% 10%, rgba(255, 110, 65, 0.1), transparent 18%),
+    linear-gradient(180deg, #fffdf9 0%, #fff8ef 46%, #fff2e5 100%);
 }
 
 body::before {
@@ -44,25 +44,23 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image:
-    linear-gradient(rgba(73, 45, 28, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(73, 45, 28, 0.04) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 85%);
-  opacity: 0.28;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0)),
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.55), transparent 70%);
+  opacity: 0.85;
   z-index: -2;
 }
 
 body::after {
   content: "";
   position: fixed;
-  top: -8rem;
-  right: -8rem;
-  width: 34rem;
-  height: 34rem;
+  top: -10rem;
+  right: -10rem;
+  width: 28rem;
+  height: 28rem;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(255, 110, 65, 0.22), transparent 68%);
-  filter: blur(10px);
+  background: radial-gradient(circle, rgba(255, 110, 65, 0.14), transparent 68%);
+  filter: blur(18px);
   z-index: -2;
 }
 
@@ -97,11 +95,11 @@ button {
   position: fixed;
   left: -12rem;
   bottom: -14rem;
-  width: 36rem;
-  height: 36rem;
+  width: 28rem;
+  height: 28rem;
   pointer-events: none;
-  background: radial-gradient(circle, rgba(255, 190, 74, 0.22), transparent 72%);
-  filter: blur(8px);
+  background: radial-gradient(circle, rgba(255, 190, 74, 0.16), transparent 72%);
+  filter: blur(16px);
   z-index: -1;
 }
 
@@ -109,24 +107,24 @@ button {
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow:
-    0 16px 44px rgba(77, 45, 20, 0.08),
+    0 12px 36px rgba(77, 45, 20, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(16px);
 }
 
 .surface-panel-strong {
   background: var(--surface-strong);
   border: 1px solid var(--border-strong);
   box-shadow:
-    0 26px 80px rgba(77, 45, 20, 0.1),
+    0 20px 56px rgba(77, 45, 20, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(22px);
+  backdrop-filter: blur(18px);
 }
 
 .surface-card {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(118, 70, 32, 0.1);
-  box-shadow: 0 14px 36px rgba(77, 45, 20, 0.08);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(118, 70, 32, 0.08);
+  box-shadow: 0 10px 28px rgba(77, 45, 20, 0.06);
 }
 
 .section-kicker {
@@ -134,8 +132,8 @@ button {
   align-items: center;
   gap: 0.65rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 110, 65, 0.16);
-  background: linear-gradient(135deg, rgba(255, 190, 74, 0.18), rgba(255, 110, 65, 0.1));
+  border: 1px solid rgba(255, 110, 65, 0.12);
+  background: rgba(255, 255, 255, 0.78);
   padding: 0.45rem 0.9rem;
   font-size: 0.72rem;
   font-weight: 700;
@@ -160,12 +158,12 @@ button {
   border-radius: 999px;
   background: linear-gradient(135deg, var(--warm), var(--accent));
   color: white;
-  box-shadow: 0 14px 30px rgba(215, 81, 39, 0.24);
+  box-shadow: 0 10px 24px rgba(215, 81, 39, 0.18);
 }
 
 .action-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 18px 34px rgba(215, 81, 39, 0.3);
+  box-shadow: 0 14px 28px rgba(215, 81, 39, 0.22);
 }
 
 .action-secondary {
@@ -175,7 +173,7 @@ button {
   gap: 0.65rem;
   border-radius: 999px;
   border: 1px solid rgba(118, 70, 32, 0.12);
-  background: rgba(255, 251, 245, 0.68);
+  background: rgba(255, 255, 255, 0.74);
   color: var(--foreground);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }

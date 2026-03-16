@@ -8,11 +8,11 @@ export default function ModeToggle() {
     const isAiMode = pathname === "/AImode";
 
     return (
-        <div className="surface-panel inline-flex items-center justify-center gap-2 rounded-full p-1.5">
+        <div className="surface-card inline-flex items-center justify-center gap-2 rounded-full p-1.5">
             <Link
                 href="/"
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${!isAiMode
-                        ? "bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] text-white shadow-sm"
+                        ? "bg-[#2d1b12] text-[#fff4de] shadow-sm"
                         : "text-[#7b5b42] hover:bg-white/70 hover:text-[#2d1b12]"
                     }`}
             >

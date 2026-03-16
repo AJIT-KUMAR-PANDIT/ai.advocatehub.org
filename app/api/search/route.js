@@ -8,6 +8,7 @@ import {
     CUSTOM_SEARCH_PRIORITY,
     getSearchProviderOrder,
 } from "@/lib/searchConfig";
+import { normalizeSearchResultType } from "@/lib/searchFilters";
 import {
     buildSearchRedirectDisplayUrl,
     buildSearchRedirectPath,
@@ -75,7 +76,75 @@ function isDuckDuckGoChallengePage(html = "") {
     return html.includes("anomaly-modal") || html.includes("Unfortunately, bots use DuckDuckGo too.");
 }
 
-function buildMockResults(query) {
+function buildMockResults(query, resultType = "all") {
+    if (resultType === "videos") {
+        return [
+            {
+                title: `${query} - Supreme Court of India videos`,
+                link: "https://www.youtube.com/@supremecourtofindia",
+                snippet: `Video content, explainers, and hearings related to ${query}.`,
+                formattedUrl: "youtube.com",
+            },
+            {
+                title: `${query} - LiveLaw video coverage`,
+                link: "https://www.youtube.com/@LiveLawIndia",
+                snippet: `Legal explainers and court coverage relevant to ${query}.`,
+                formattedUrl: "youtube.com",
+            },
+        ];
+    }
+
+    if (resultType === "audio") {
+        return [
+            {
+                title: `${query} - Legal audio references`,
+                link: "https://archive.org/",
+                snippet: `Audio-first references, oral explainers, or archived recordings related to ${query}.`,
+                formattedUrl: "archive.org",
+            },
+            {
+                title: `${query} - Indian legal podcast search`,
+                link: "https://open.spotify.com/search/" + encodeURIComponent(query),
+                snippet: `Podcast and spoken analysis relevant to ${query}.`,
+                formattedUrl: "spotify.com",
+            },
+        ];
+    }
+
+    if (resultType === "images") {
+        return [
+            {
+                title: `${query} - Image references`,
+                link: "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(query),
+                snippet: `Image-focused references and visuals relevant to ${query}.`,
+                formattedUrl: "images.google.com",
+            },
+            {
+                title: `${query} - Wikimedia Commons`,
+                link: "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=" + encodeURIComponent(query),
+                snippet: `Image collections and visual records relevant to ${query}.`,
+                formattedUrl: "commons.wikimedia.org",
+            },
+        ];
+    }
+
+    if (resultType === "archives") {
+        return [
+            {
+                title: `${query} - Document archive search`,
+                link: "https://archive.org/search?query=" + encodeURIComponent(query),
+                snippet: `Archived downloadable bundles and preserved material relevant to ${query}.`,
+                formattedUrl: "archive.org",
+            },
+            {
+                title: `${query} - Public records repository`,
+                link: "https://www.data.gov.in/",
+                snippet: `Downloadable public records and datasets that may relate to ${query}.`,
+                formattedUrl: "data.gov.in",
+            },
+        ];
+    }
+
     return [
         {
             title: `${query} - Supreme Court of India`,
@@ -110,8 +179,8 @@ function buildMockResults(query) {
     ];
 }
 
-async function searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num }) {
-    const searchUrl = buildGoogleSearchUrl({ query, fileType, siteRestrict, dateRestrict, num });
+async function searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num, resultType }) {
+    const searchUrl = buildGoogleSearchUrl({ query, fileType, siteRestrict, dateRestrict, num, resultType });
     const res  = await fetch(searchUrl);
     const data = await res.json();
 
@@ -133,8 +202,8 @@ async function searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, n
     };
 }
 
-async function searchWithBing({ query, fileType, siteRestrict, dateRestrict, num }) {
-    const { url, headers } = buildBingSearchRequest({ query, fileType, siteRestrict, dateRestrict, num });
+async function searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType }) {
+    const { url, headers } = buildBingSearchRequest({ query, fileType, siteRestrict, dateRestrict, num, resultType });
     const res  = await fetch(url, { headers });
     const data = await res.json();
 
@@ -162,8 +231,8 @@ async function searchWithBing({ query, fileType, siteRestrict, dateRestrict, num
     };
 }
 
-async function searchWithDuckDuckGo({ query, fileType, siteRestrict, num }) {
-    const { url, headers } = buildDuckDuckGoSearchRequest({ query, fileType, siteRestrict });
+async function searchWithDuckDuckGo({ query, fileType, siteRestrict, num, resultType }) {
+    const { url, headers } = buildDuckDuckGoSearchRequest({ query, fileType, siteRestrict, resultType });
     const res  = await fetch(url, { headers });
     const html = await res.text();
 
@@ -200,6 +269,7 @@ async function searchWithDuckDuckGo({ query, fileType, siteRestrict, num }) {
  *
  * Query Params:
  *   q            - search query (required)
+ *   type         - all | web | pdf | docx | docs | images | videos | audio | slides | sheets | text | archives | news
  *   fileType     - pdf | doc | docx | ppt | xls | txt | rtf
  *   siteRestrict - official | govonly | courts
  *   dateRestrict - d1 | w1 | m1 | m3 | m6 | y1 | y2 | y5
@@ -209,6 +279,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
 
     const query        = searchParams.get("q");
+    const resultType   = normalizeSearchResultType(searchParams.get("type") || searchParams.get("resultType") || "all");
     const fileType     = searchParams.get("fileType") || null;
     const siteRestrict = searchParams.get("siteRestrict") || null;
     const dateRestrict = searchParams.get("dateRestrict") || null;
@@ -234,15 +305,16 @@ export async function GET(request) {
 
         try {
             const payload = provider === "google"
-                ? await searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num })
+                ? await searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num, resultType })
                 : provider === "bing"
-                    ? await searchWithBing({ query, fileType, siteRestrict, dateRestrict, num })
-                    : await searchWithDuckDuckGo({ query, fileType, siteRestrict, num });
+                    ? await searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType })
+                    : await searchWithDuckDuckGo({ query, fileType, siteRestrict, num, resultType });
 
             return NextResponse.json({
                 items: payload.items,
                 meta: {
                     query,
+                    resultType,
                     fileType,
                     siteRestrict,
                     dateRestrict,
@@ -267,9 +339,10 @@ export async function GET(request) {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     return NextResponse.json({
-        items: buildMockResults(query),
+        items: buildMockResults(query, resultType),
         meta: {
             query,
+            resultType,
             fileType,
             siteRestrict,
             dateRestrict,

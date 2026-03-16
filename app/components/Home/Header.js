@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,17 +14,21 @@ export default function Header() {
 
     return (
         <header className="px-4 pt-4 sm:px-6 lg:px-8">
-            <div className="surface-panel mx-auto flex w-full max-w-7xl items-center justify-between gap-4 rounded-full px-4 py-3 sm:px-6">
+            <div className="surface-panel mx-auto flex w-full max-w-7xl items-center justify-between gap-4 rounded-full px-4 py-3 sm:px-5">
                 <Link href="/" className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] text-sm font-semibold text-[#2a1610] shadow-lg">
-                        AH
-                    </span>
-                    <div className="min-w-0">
-                        <p className="font-display truncate text-lg font-semibold text-[#2d1b12]">
-                            AdvocateHub
-                        </p>
-                        <p className="truncate text-[11px] uppercase tracking-[0.24em] text-[#8f6a52]">
-                            Legal Research OS
+                    <div className="surface-card flex h-12 items-center rounded-full px-3 py-2">
+                        <Image
+                            src="/advocatehub.webp"
+                            alt="AdvocateHub"
+                            width={114}
+                            height={32}
+                            className="h-7 w-auto object-contain"
+                            priority
+                        />
+                    </div>
+                    <div className="hidden min-w-0 sm:block">
+                        <p className="truncate text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8f6a52]">
+                            Minimal search + AI
                         </p>
                     </div>
                 </Link>
@@ -39,7 +44,7 @@ export default function Header() {
                                 key={item.href}
                                 href={item.href}
                                 className={`rounded-full px-4 py-2 text-sm font-medium ${isActive
-                                    ? "bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] text-white shadow-sm"
+                                    ? "bg-[#2d1b12] text-[#fff4de] shadow-sm"
                                     : "text-[#7b5b42] hover:bg-white/70 hover:text-[#2d1b12]"
                                     }`}
                             >

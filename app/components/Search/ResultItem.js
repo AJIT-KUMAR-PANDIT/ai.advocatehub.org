@@ -1,5 +1,20 @@
 import Link from "next/link";
 
+function inferResultType(result) {
+    const haystack = `${result?.targetUrl || ""} ${result?.link || ""} ${result?.title || ""} ${result?.snippet || ""}`.toLowerCase();
+
+    if (haystack.includes(".pdf")) return "PDF";
+    if (haystack.includes(".docx")) return "DOCX";
+    if (haystack.includes(".doc")) return "DOC";
+    if (haystack.includes("youtube.com") || haystack.includes("vimeo.com") || haystack.includes(".mp4")) return "Video";
+    if (haystack.includes(".jpg") || haystack.includes(".jpeg") || haystack.includes(".png") || haystack.includes(".webp")) return "Image";
+    if (haystack.includes(".mp3") || haystack.includes(".wav") || haystack.includes("soundcloud")) return "Audio";
+    if (haystack.includes(".ppt") || haystack.includes(".pptx")) return "Slides";
+    if (haystack.includes(".xls") || haystack.includes(".xlsx") || haystack.includes(".csv")) return "Sheets";
+    if (haystack.includes(".txt") || haystack.includes(".rtf")) return "Text";
+    return "Web";
+}
+
 export default function ResultItem({ result }) {
     if (!result) return null;
 
@@ -11,18 +26,18 @@ export default function ResultItem({ result }) {
     }
 
     const displayUrl = result.formattedUrl || result.displayLink || resolvedHostname;
-    const badgeText = resolvedHostname.slice(0, 2).toUpperCase() || "AH";
+    const badgeText = inferResultType(result);
 
     return (
-        <article className="surface-panel-strong group rounded-[28px] p-5 sm:p-6">
-            <div className="flex flex-col gap-4">
+        <article className="surface-panel group rounded-[24px] px-5 py-4">
+            <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
-                        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-[rgba(255,190,74,0.16)] text-sm font-bold text-[#d75127]">
+                        <div className="flex h-10 min-w-[56px] flex-shrink-0 items-center justify-center rounded-full bg-[rgba(255,190,74,0.12)] px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d75127]">
                             {badgeText}
                         </div>
                         <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-[#2d1b12]">
+                            <p className="truncate text-sm font-medium text-[#2d1b12]">
                                 {displayUrl}
                             </p>
                             <p className="truncate text-xs uppercase tracking-[0.2em] text-[#8f6a52]">
@@ -30,18 +45,18 @@ export default function ResultItem({ result }) {
                             </p>
                         </div>
                     </div>
-                    <span className="hidden rounded-full border border-[#f4ddbf] bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#8f6a52] sm:inline-flex">
-                        Open result
+                    <span className="hidden rounded-full border border-[#f4ddbf] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8f6a52] sm:inline-flex">
+                        Open source
                     </span>
                 </div>
 
                 <Link href={result.link} className="block">
-                    <h3 className="font-display text-2xl font-semibold leading-tight text-[#2d1b12] group-hover:text-[#d75127] sm:text-[1.9rem]">
+                    <h3 className="font-display text-[1.55rem] font-semibold leading-tight text-[#2d1b12] group-hover:text-[#d75127]">
                         {result.title}
                     </h3>
                 </Link>
 
-                <p className="text-sm leading-7 text-[#7b5b42] sm:text-[15px]">
+                <p className="text-sm leading-7 text-[#7b5b42]">
                     {result.snippet}
                 </p>
             </div>
