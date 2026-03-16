@@ -1,77 +1,114 @@
 import { NextResponse } from "next/server";
+import { buildSearchUrl, boostPriorityResults, SEARCH_CONFIG } from "@/lib/searchConfig";
 
+/**
+ * GET /api/search
+ *
+ * Query Params:
+ *   q            — search query (required)
+ *   fileType     — pdf | doc | docx | ppt | xls | txt | rtf
+ *   siteRestrict — official | govonly | courts
+ *   dateRestrict — d1 | w1 | m1 | m3 | m6 | y1 | y2 | y5
+ *   num          — 1-10 (default 10)
+ */
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get("q");
+
+    const query        = searchParams.get("q");
+    const fileType     = searchParams.get("fileType")     || null;
+    const siteRestrict = searchParams.get("siteRestrict") || null;
+    const dateRestrict = searchParams.get("dateRestrict") || null;
+    const num          = Math.min(10, Math.max(1, parseInt(searchParams.get("num") || "10", 10)));
 
     if (!query) {
-        return NextResponse.json({ error: "Query parameter 'q' is required" }, { status: 400 });
+        return NextResponse.json(
+            { error: "Query parameter 'q' is required" },
+            { status: 400 }
+        );
     }
 
-    const apiKey = process.env.GOOGLE_API_KEY;
-    const cx = process.env.GOOGLE_SEARCH_CX;
+    const { apiKey, cx } = SEARCH_CONFIG;
 
-    // Use mock data if API keys aren't configured so the UI still functions perfectly.
+    // ── Fallback: no API keys configured ─────────────────────────
     if (!apiKey || !cx) {
-        console.warn("Google API Keys not found in .env. Returning mock India-focused legal data.");
+        console.warn("[search] No API keys found — returning mock data");
+        await new Promise((r) => setTimeout(r, 600));
 
-        // Simulating network delay
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
-        // Mock search results tailored to Indian context and legal queries as requested
         const mockResults = [
             {
-                title: `Information regarding ${query} - Supreme Court of India`,
-                link: "https://main.sci.gov.in/",
-                snippet: "Official website of the Supreme Court of India. Providing rulings, case statuses, and judgments related to recent filings addressing: " + query,
-                formattedUrl: "main.sci.gov.in"
+                title:        `${query} — Supreme Court of India`,
+                link:         "https://main.sci.gov.in/",
+                snippet:      `Official rulings and case status from the Supreme Court of India related to: ${query}.`,
+                formattedUrl: "main.sci.gov.in",
             },
             {
-                title: `Judgments on ${query} - Indian Kanoon`,
-                link: "https://indiankanoon.org/search/?formInput=" + encodeURIComponent(query),
-                snippet: "Search results on " + query + " from Indian Kanoon. Access millions of Indian legal documents, high court judgments, and acts.",
-                formattedUrl: "indiankanoon.org"
+                title:        `${query} — Indian Kanoon`,
+                link:         `https://indiankanoon.org/search/?formInput=${encodeURIComponent(query)}`,
+                snippet:      `Legal documents, High Court judgments and Acts related to: ${query}.`,
+                formattedUrl: "indiankanoon.org",
             },
             {
-                title: `Ministry of Law and Justice - Government of India`,
-                link: "https://lawmin.gov.in/",
-                snippet: "The Ministry of Law and Justice provides comprehensive details regarding legislative acts, legal affairs, and justice departments related to " + query,
-                formattedUrl: "lawmin.gov.in"
+                title:        `Ministry of Law & Justice — ${query}`,
+                link:         "https://lawmin.gov.in/",
+                snippet:      `Legislative acts, legal affairs, and justice department references for: ${query}.`,
+                formattedUrl: "lawmin.gov.in",
             },
             {
-                title: `The Constitution of India | Legislative Department`,
-                link: "https://legislative.gov.in/constitution-of-india",
-                snippet: "National Portal of India provides links to the Constitution of India. Search for amendments, articles, and references pertaining to " + query,
-                formattedUrl: "legislative.gov.in"
+                title:        `India Code — ${query}`,
+                link:         "https://indiacode.nic.in/",
+                snippet:      `Browse Indian statutes and bare acts. Relevant codified laws for: ${query}.`,
+                formattedUrl: "indiacode.nic.in",
             },
             {
-                title: `${query} definition and application in Indian Law`,
-                link: "https://www.livelaw.in/",
-                snippet: "Comprehensive legal news and updates from Indian courts. Recent articles and analyses discussing the implications of " + query + " in modern litigation.",
-                formattedUrl: "www.livelaw.in"
-            }
+                title:        `LiveLaw — ${query}`,
+                link:         "https://www.livelaw.in/",
+                snippet:      `Latest legal news, court updates and analysis related to: ${query}.`,
+                formattedUrl: "www.livelaw.in",
+            },
         ];
 
-        return NextResponse.json({ items: mockResults });
+        return NextResponse.json({
+            items: mockResults,
+            meta: { query, fileType, siteRestrict, dateRestrict, isMock: true },
+        });
     }
 
-    // If keys exist, query Google's API prioritizing India context
+    // ── Live Google Custom Search ─────────────────────────────────
     try {
-        // We add 'cr=countryIN' to prioritize Indian content
-        const googleUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}&cr=countryIN`;
+        const searchUrl = buildSearchUrl({ query, fileType, siteRestrict, dateRestrict, num });
 
-        const res = await fetch(googleUrl);
+        const res  = await fetch(searchUrl);
+        const data = await res.json();
 
         if (!res.ok) {
-            const errorData = await res.json();
-            return NextResponse.json({ error: errorData.error.message }, { status: res.status });
+            const errMsg = data?.error?.message || `Google CSE error ${res.status}`;
+            console.error("[search] Google CSE error:", errMsg);
+            return NextResponse.json({ error: errMsg }, { status: res.status });
         }
 
-        const data = await res.json();
-        return NextResponse.json({ items: data.items || [] });
+        // Boost results from priority domains to the top
+        const rawItems     = data.items || [];
+        const boostedItems = boostPriorityResults(rawItems);
+
+        return NextResponse.json({
+            items: boostedItems,
+            meta: {
+                query,
+                fileType,
+                siteRestrict,
+                dateRestrict,
+                totalResults: data.searchInformation?.totalResults,
+                formattedTotalResults: data.searchInformation?.formattedTotalResults,
+                searchTime: data.searchInformation?.formattedSearchTime,
+                isMock: false,
+            },
+        });
 
     } catch (error) {
-        console.error("Search API Error:", error);
-        return NextResponse.json({ error: "Failed to fetch search results" }, { status: 500 });
+        console.error("[search] Unexpected error:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch search results" },
+            { status: 500 }
+        );
     }
 }

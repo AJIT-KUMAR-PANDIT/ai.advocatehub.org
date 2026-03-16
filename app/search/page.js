@@ -6,6 +6,7 @@ import SearchHeader from "../components/Search/SearchHeader";
 import ResultItem from "../components/Search/ResultItem";
 import ResultSkeleton from "../components/Search/ResultSkeleton";
 import Footer from "../components/Home/Footer";
+import axios from "axios";
 
 function SearchResults() {
     const searchParams = useSearchParams();
@@ -25,16 +26,10 @@ function SearchResults() {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                const data = await res.json();
-
-                if (!res.ok) {
-                    throw new Error(data.error || "Failed to fetch results");
-                }
-
-                setResults(data.items || []);
+                const res = await axios.get(`/api/search?q=${encodeURIComponent(query)}`);
+                setResults(res.data.items || []);
             } catch (err) {
-                setError(err.message);
+                setError(err.response?.data?.error || err.message || "Failed to fetch results");
             } finally {
                 setLoading(false);
             }
