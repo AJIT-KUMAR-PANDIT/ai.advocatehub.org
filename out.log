@@ -4778,3 +4778,23 @@
  GET /AImode 200 in 25ms (compile: 10ms, render: 15ms)
  POST /api/ai 200 in 8.6s (compile: 181ms, render: 8.4s)
  POST /api/ai 200 in 10.5s (compile: 4ms, render: 10.5s)
+✓ Compiled in 159ms
+✓ Compiled in 71ms
+✓ Compiled in 43ms
+✓ Compiled in 48ms
+✓ Compiled in 58ms
+✓ Compiled in 83ms
+ GET / 200 in 73ms (compile: 52ms, render: 21ms)
+ GET /AImode 200 in 46ms (compile: 35ms, render: 11ms)
+ GET /AImode 200 in 19ms (compile: 1159µs, render: 18ms)
+ GET /search?q=google 200 in 19ms (compile: 9ms, render: 10ms)
+✓ Compiled in 27ms
+✓ Compiled in 44ms
+✓ Compiled in 38ms
+ GET /AImode 200 in 114ms (compile: 44ms, render: 70ms)
+ GET /search?q=google 200 in 114ms (compile: 91ms, render: 23ms)
+✓ Compiled in 34ms
+ GET /AImode 200 in 88ms (compile: 32ms, render: 56ms)
+ GET /search?q=google 200 in 88ms (compile: 74ms, render: 14ms)
+✓ Compiled in 14ms
+ POST /api/ai 200 in 13.8s (compile: 4ms, render: 13.8s)
