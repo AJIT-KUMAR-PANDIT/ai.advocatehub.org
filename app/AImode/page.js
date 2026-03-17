@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "../components/Home/Header";
 import Logo from "../components/Home/Logo";
+import ModeToggle from "../components/Home/ModeToggle";
 import Footer from "../components/Home/Footer";
 import ChatMessage from "../components/AImode/ChatMessage";
 import AttachmentChip from "../components/AImode/AttachmentChip";
@@ -379,8 +380,8 @@ export default function AImode() {
                     <div>
                         <h2 className="font-display text-2xl font-semibold text-[#2d1b12]">Bring your own LLM</h2>
                         <p className="ai-subtle mt-2 max-w-2xl text-sm leading-7">
-                            Connect an OpenAI-compatible endpoint such as OpenAI, OpenRouter, Groq, Ollama, or LM Studio.
-                            When this is off, AdvocateHub keeps using Gemini with Google Search grounding.
+                            Connect an OpenAI-compatible endpoint such as OpenAI, OpenRouter, Groq, Ollama, or LM Studio,
+                            or use a Claude / Anthropic API endpoint. When this is off, AdvocateHub keeps using Gemini with Google Search grounding.
                         </p>
                     </div>
 
@@ -587,6 +588,10 @@ export default function AImode() {
                     onChange={handleAttachmentSelect}
                     className="hidden"
                 />
+
+                <div className="mb-6 flex justify-center">
+                    <ModeToggle />
+                </div>
 
                 {showWelcome ? (
                     <section className="flex flex-1 items-center justify-center py-4 sm:py-10">

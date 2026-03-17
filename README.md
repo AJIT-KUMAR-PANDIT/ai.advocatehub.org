@@ -25,7 +25,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 The AI chat mode now supports two ways to choose an LLM:
 
 - Built-in Gemini configuration from `.env`
-- Your own OpenAI-compatible endpoint from the AI chat settings panel
+- Your own OpenAI-compatible or Anthropic-compatible endpoint from the AI chat settings panel
 
 AI chat uploads are also supported for:
 
@@ -54,15 +54,43 @@ Bing and DuckDuckGo results are exposed as internal `https://advocatehub.org/go/
 Optional environment variables for a custom provider:
 
 ```bash
+CUSTOM_LLM_PROVIDER=auto
 CUSTOM_LLM_URL=
 CUSTOM_LLM_API_KEY=
 CUSTOM_LLM_MODEL=
 CUSTOM_LLM_SYSTEM_PROMPT=
 CUSTOM_LLM_TEMPERATURE=0.7
 CUSTOM_LLM_MAX_TOKENS=2048
+CUSTOM_LLM_ANTHROPIC_VERSION=2023-06-01
+CUSTOM_LLM_SITE_URL=
+CUSTOM_LLM_APP_NAME=AdvocateHub
 ```
 
-Examples of compatible endpoints include OpenAI, OpenRouter, Groq, Ollama, and LM Studio. If you enable the custom endpoint in the UI, the app will use that for chat; otherwise it keeps using Gemini with Google Search grounding.
+`CUSTOM_LLM_PROVIDER` can be `auto`, `openai`, `openrouter`, or `anthropic`.
+
+Examples of compatible endpoints include:
+
+- OpenAI
+- OpenRouter
+- Groq
+- Ollama
+- LM Studio
+- Anthropic Claude
+
+If you enable the custom endpoint in the UI, the app will use that for chat; otherwise it keeps using Gemini with Google Search grounding. The search summary route also uses the same env-based custom provider config, so Claude / Anthropic can power both AI chat and search summaries.
+
+For OpenRouter, use:
+
+```bash
+CUSTOM_LLM_PROVIDER=openrouter
+CUSTOM_LLM_URL=https://openrouter.ai/api/v1
+CUSTOM_LLM_API_KEY=
+CUSTOM_LLM_MODEL=openai/gpt-4.1-mini
+CUSTOM_LLM_SITE_URL=https://advocatehub.org
+CUSTOM_LLM_APP_NAME=AdvocateHub
+```
+
+OpenRouter uses the OpenAI-style API path, and the app now also sends the optional `HTTP-Referer` and `X-Title` headers when `CUSTOM_LLM_PROVIDER=openrouter`.
 
 ## Learn More
 

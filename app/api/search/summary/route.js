@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import {
+    buildAnthropicMessagesUrl,
     buildOpenAICompatibleChatUrl,
+    buildOpenRouterHeaders,
     GEMINI_CONFIG,
     resolveCustomLlmConfig,
 } from "@/lib/searchConfig";
@@ -201,7 +203,7 @@ async function generateGeminiSummary(query, results) {
     };
 }
 
-async function generateCustomSummary(query, results, llmConfig) {
+async function generateOpenAICompatibleSummary(query, results, llmConfig) {
     let endpoint;
 
     try {
@@ -212,6 +214,7 @@ async function generateCustomSummary(query, results, llmConfig) {
 
     const headers = {
         "Content-Type": "application/json",
+        ...buildOpenRouterHeaders(llmConfig),
     };
 
     if (llmConfig.apiKey) {
@@ -250,6 +253,62 @@ async function generateCustomSummary(query, results, llmConfig) {
     };
 }
 
+async function generateAnthropicSummary(query, results, llmConfig) {
+    let endpoint;
+
+    try {
+        endpoint = buildAnthropicMessagesUrl(llmConfig.url);
+    } catch {
+        throw new Error("Claude / Anthropic URL is invalid.");
+    }
+
+    const headers = {
+        "Content-Type": "application/json",
+        "anthropic-version": llmConfig.anthropicVersion,
+    };
+
+    if (llmConfig.apiKey) {
+        headers["x-api-key"] = llmConfig.apiKey;
+    }
+
+    const upstream = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            model: llmConfig.model,
+            system: SUMMARY_SYSTEM_PROMPT,
+            messages: [
+                {
+                    role: "user",
+                    content: [
+                        {
+                            type: "text",
+                            text: buildPrompt(query, results),
+                        },
+                    ],
+                },
+            ],
+            temperature: 0.25,
+            max_tokens: Math.min(llmConfig.maxTokens || 700, 700),
+            stream: false,
+        }),
+    });
+
+    if (!upstream.ok) {
+        const errorText = await upstream.text();
+        throw new Error(getErrorMessage(errorText, upstream.status));
+    }
+
+    const payload = await upstream.json();
+    const summary = extractTextContent(payload?.content || payload?.response || payload?.completion).trim();
+
+    return {
+        summary,
+        mode: "custom_llm",
+        model: llmConfig.model,
+    };
+}
+
 export async function POST(request) {
     try {
         const body = await request.json();
@@ -271,7 +330,9 @@ export async function POST(request) {
 
         try {
             if (llmConfig.shouldUse) {
-                payload = await generateCustomSummary(query, results, llmConfig);
+                payload = llmConfig.provider === "anthropic"
+                    ? await generateAnthropicSummary(query, results, llmConfig)
+                    : await generateOpenAICompatibleSummary(query, results, llmConfig);
             } else {
                 payload = await generateGeminiSummary(query, results);
             }

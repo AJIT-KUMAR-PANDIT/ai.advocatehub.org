@@ -14,7 +14,9 @@ import {
     TEXT_MIME_TYPE,
 } from "@/lib/attachmentUtils";
 import {
+    buildAnthropicMessagesUrl,
     buildOpenAICompatibleChatUrl,
+    buildOpenRouterHeaders,
     GEMINI_CONFIG,
     resolveCustomLlmConfig,
 } from "@/lib/searchConfig";
@@ -91,6 +93,28 @@ function historyToOpenAIMessages(history = []) {
             return {
                 role: item.role === "model" ? "assistant" : "user",
                 content,
+            };
+        })
+        .filter(Boolean);
+}
+
+function historyToAnthropicMessages(history = []) {
+    return history
+        .map((item) => {
+            const content = extractTextContent(item?.parts || []);
+
+            if (!content.trim()) {
+                return null;
+            }
+
+            return {
+                role: item.role === "model" ? "assistant" : "user",
+                content: [
+                    {
+                        type: "text",
+                        text: content,
+                    },
+                ],
             };
         })
         .filter(Boolean);
@@ -282,6 +306,46 @@ async function buildOpenAIUserContent(message, attachments = []) {
     ];
 }
 
+async function buildAnthropicUserContent(message, attachments = []) {
+    const content = [
+        {
+            type: "text",
+            text: `User question:\n${message}`,
+        },
+    ];
+
+    for (const attachment of attachments) {
+        if (attachment.kind === "image") {
+            content.push({
+                type: "text",
+                text: `Attached image: ${attachment.name}`,
+            });
+            content.push({
+                type: "image",
+                source: {
+                    type: "base64",
+                    media_type: attachment.mimeType,
+                    data: attachment.base64,
+                },
+            });
+            continue;
+        }
+
+        const extractedText = await getExtractedAttachmentText(attachment);
+
+        if (!extractedText) {
+            throw new Error(`Could not extract readable text from ${attachment.name}.`);
+        }
+
+        content.push({
+            type: "text",
+            text: `Attachment "${attachment.name}" (${attachment.mimeType}) extracted text:\n${extractedText}`,
+        });
+    }
+
+    return content;
+}
+
 async function streamGeminiResponse({ message, history, attachments, send }) {
     const { apiKey, model, systemInstruction, groundingConfig, generationConfig } = GEMINI_CONFIG;
 
@@ -330,7 +394,7 @@ async function streamGeminiResponse({ message, history, attachments, send }) {
     }
 }
 
-async function streamCustomLlmResponse({ message, history, attachments, llmConfig, send }) {
+async function streamOpenAICompatibleResponse({ message, history, attachments, llmConfig, send }) {
     let endpoint;
 
     try {
@@ -341,6 +405,7 @@ async function streamCustomLlmResponse({ message, history, attachments, llmConfi
 
     const headers = {
         "Content-Type": "application/json",
+        ...buildOpenRouterHeaders(llmConfig),
     };
 
     if (llmConfig.apiKey) {
@@ -451,6 +516,130 @@ async function streamCustomLlmResponse({ message, history, attachments, llmConfi
             }
         }
     }
+}
+
+async function streamAnthropicResponse({ message, history, attachments, llmConfig, send }) {
+    let endpoint;
+
+    try {
+        endpoint = buildAnthropicMessagesUrl(llmConfig.url);
+    } catch {
+        throw new Error("Claude / Anthropic URL is invalid.");
+    }
+
+    const headers = {
+        "Content-Type": "application/json",
+        "anthropic-version": llmConfig.anthropicVersion,
+    };
+
+    if (llmConfig.apiKey) {
+        headers["x-api-key"] = llmConfig.apiKey;
+    }
+
+    const upstream = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+            model: llmConfig.model,
+            system: llmConfig.systemPrompt,
+            messages: [
+                ...historyToAnthropicMessages(history),
+                {
+                    role: "user",
+                    content: await buildAnthropicUserContent(message, attachments),
+                },
+            ],
+            temperature: llmConfig.temperature,
+            max_tokens: llmConfig.maxTokens,
+            stream: true,
+        }),
+    });
+
+    if (!upstream.ok) {
+        const errorText = await upstream.text();
+        throw new Error(getErrorMessage(errorText, upstream.status));
+    }
+
+    if (!upstream.body) {
+        throw new Error("Claude / Anthropic returned an empty response.");
+    }
+
+    const contentType = upstream.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+        const payload = await upstream.json();
+        const text = extractTextContent(payload?.content || payload?.response || payload?.completion).trim();
+
+        if (text) {
+            send({ type: "chunk", text });
+        }
+
+        return;
+    }
+
+    const reader  = upstream.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer    = "";
+
+    function processAnthropicEvent(eventText) {
+        const lines = eventText.split("\n");
+        const data = lines
+            .filter((line) => line.startsWith("data:"))
+            .map((line) => line.replace(/^data:\s?/, ""))
+            .join("");
+
+        if (!data) {
+            return;
+        }
+
+        try {
+            const payload = JSON.parse(data);
+
+            if (payload?.type === "error") {
+                throw new Error(payload?.error?.message || payload?.message || "Claude / Anthropic request failed");
+            }
+
+            const text = payload?.delta?.text
+                || payload?.content_block?.text
+                || extractTextContent(payload?.content);
+
+            if (text) {
+                send({ type: "chunk", text });
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            }
+        }
+    }
+
+    while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+            break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split("\n\n");
+        buffer = events.pop() ?? "";
+
+        for (const event of events) {
+            processAnthropicEvent(event);
+        }
+    }
+
+    if (buffer.trim()) {
+        processAnthropicEvent(buffer);
+    }
+}
+
+async function streamCustomLlmResponse({ message, history, attachments, llmConfig, send }) {
+    if (llmConfig.provider === "anthropic") {
+        return streamAnthropicResponse({ message, history, attachments, llmConfig, send });
+    }
+
+    return streamOpenAICompatibleResponse({ message, history, attachments, llmConfig, send });
 }
 
 export async function POST(request) {
