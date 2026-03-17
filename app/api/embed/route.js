@@ -49,8 +49,7 @@ export async function POST(request) {
             );
         }
 
-        // text-embedding-004 is only available on v1 (not v1beta default)
-        const ai = new GoogleGenAI({ apiKey, apiVersion: "v1" });
+        const ai = new GoogleGenAI({ apiKey });
 
         // Embed all texts (batch or single)
         const embeddingPromises = texts.map((content) =>
@@ -65,7 +64,7 @@ export async function POST(request) {
         );
 
         const results = await Promise.all(embeddingPromises);
-        const vectors = results.map((r) => r.embedding?.values || []);
+        const vectors = results.map((r) => r.embeddings?.[0]?.values || []);
 
         const meta = {
             model,
