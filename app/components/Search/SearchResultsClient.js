@@ -41,7 +41,7 @@ export default function SearchResultsClient() {
     const [summary, setSummary] = useState(null);
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState(null);
-    const [visibleCount, setVisibleCount] = useState(8);
+    const [visibleCount, setVisibleCount] = useState(20);
 
     const providerLabel = meta?.provider === "bing"
         ? "Bing Custom Search"
@@ -99,7 +99,7 @@ export default function SearchResultsClient() {
             setSummary(null);
             setSummaryLoading(true);
             setSummaryError(null);
-            setVisibleCount(8);
+            setVisibleCount(20);
 
             try {
                 const res = await axios.get("/api/search", {
@@ -108,6 +108,7 @@ export default function SearchResultsClient() {
                         type: resultType,
                         siteRestrict: siteRestrict || undefined,
                         dateRestrict: dateRestrict || undefined,
+                        num: 30 // Request more results
                     },
                     signal: controller.signal,
                 });
@@ -161,11 +162,11 @@ export default function SearchResultsClient() {
         
         // Simulate loading delay for smooth UX
         setTimeout(() => {
-            const increment = resultType === "videos" || resultType === "images" ? 8 : 5;
+            const increment = 15; // Load 15 more each time
             setVisibleCount(prev => prev + increment);
             setLoadingMore(false);
         }, 200);
-    }, [loadingMore, resultType]);
+    }, [loadingMore]);
 
     // Scroll-based infinite loading with IntersectionObserver
     useEffect(() => {

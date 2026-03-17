@@ -671,7 +671,7 @@ async function searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, n
 
 async function searchWithGoogleHtml({ query, fileType, siteRestrict, num, resultType }) {
     const { url, headers } = buildGoogleHtmlSearchRequest({ query, fileType, siteRestrict, num, resultType });
-    const res  = await fetch(url, { headers });
+    const res  = await fetch(url, { headers, next: { revalidate: 30 } });
     const html = await res.text();
 
     if (!res.ok) {
@@ -696,7 +696,115 @@ async function searchWithGoogleHtml({ query, fileType, siteRestrict, num, result
         meta: {
             provider: "google_html",
             totalResults: dedupedItems.length,
-            formattedTotalResults: dedupedItems.length,
+            formattedTotalResults: String(dedupedItems.length),
+            searchTime: null,
+        },
+    };
+}
+
+// Enhanced video search - try multiple sources
+async function searchVideosLive({ query, num }) {
+    const results = [];
+    const seenUrls = new Set();
+    
+    // Try Bing Videos first
+    try {
+        const bingResults = await searchVideosWithBingHtml({ query, num: num * 2 });
+        for (const item of bingResults.items) {
+            if (!seenUrls.has(item.link)) {
+                seenUrls.add(item.link);
+                results.push(item);
+            }
+        }
+    } catch (e) {
+        console.log("Bing videos failed:", e.message);
+    }
+    
+    // If not enough results, try Google Videos
+    if (results.length < num) {
+        try {
+            const googleResults = await searchWithGoogleHtml({ 
+                query, 
+                num: (num - results.length) * 2,
+                resultType: 'videos'
+            });
+            for (const item of googleResults.items) {
+                if (!seenUrls.has(item.link) && results.length < num * 3) {
+                    // Check if it's a video URL
+                    if (item.link.includes('youtube') || item.link.includes('youtu.be') || 
+                        item.link.includes('vimeo') || item.link.includes('dailymotion')) {
+                        seenUrls.add(item.link);
+                        results.push({ ...item, video: true });
+                    }
+                }
+            }
+        } catch (e) {
+            console.log("Google videos failed:", e.message);
+        }
+    }
+    
+    if (results.length === 0) {
+        throw new Error("No video results from any source");
+    }
+    
+    return {
+        items: results.slice(0, num),
+        meta: {
+            provider: "live_videos",
+            totalResults: results.length,
+            formattedTotalResults: String(results.length),
+            searchTime: null,
+        },
+    };
+}
+
+// Enhanced image search - try multiple sources
+async function searchImagesLive({ query, num }) {
+    const results = [];
+    const seenUrls = new Set();
+    
+    // Try Bing Images first
+    try {
+        const bingResults = await searchImagesWithBingHtml({ query, num: num * 2 });
+        for (const item of bingResults.items) {
+            if (!seenUrls.has(item.link)) {
+                seenUrls.add(item.link);
+                results.push(item);
+            }
+        }
+    } catch (e) {
+        console.log("Bing images failed:", e.message);
+    }
+    
+    // If not enough results, try Google Images
+    if (results.length < num) {
+        try {
+            const googleResults = await searchWithGoogleHtml({ 
+                query, 
+                num: (num - results.length) * 2,
+                resultType: 'images'
+            });
+            for (const item of googleResults.items) {
+                if (!seenUrls.has(item.link) && results.length < num * 3) {
+                    seenUrls.add(item.link);
+                    results.push(item);
+                }
+            }
+        } catch (e) {
+            console.log("Google images failed:", e.message);
+        }
+    }
+    
+    if (results.length === 0) {
+        throw new Error("No image results from any source");
+    }
+    
+    return {
+        items: results.slice(0, num),
+        meta: {
+            provider: "live_images",
+            totalResults: results.length,
+            formattedTotalResults: String(results.length),
             searchTime: null,
         },
     };
@@ -783,7 +891,7 @@ async function searchWithDuckDuckGo({ query, fileType, siteRestrict, num, result
  *   fileType     - pdf | doc | docx | ppt | xls | txt | rtf
  *   siteRestrict - official | govonly | courts
  *   dateRestrict - d1 | w1 | m1 | m3 | m6 | y1 | y2 | y5
- *   num          - 1-10 (default 10)
+ *   num          - number of results (default 20, max 50)
  */
 export async function GET(request) {
     const { searchParams } = new URL(request.url);
@@ -793,7 +901,8 @@ export async function GET(request) {
     const fileType     = searchParams.get("fileType") || null;
     const siteRestrict = searchParams.get("siteRestrict") || null;
     const dateRestrict = searchParams.get("dateRestrict") || null;
-    const num          = Math.min(10, Math.max(1, parseInt(searchParams.get("num") || "10", 10)));
+    // Allow more results - default 20, max 50
+    const num          = Math.min(50, Math.max(1, parseInt(searchParams.get("num") || "20", 10)));
 
     if (!query) {
         return NextResponse.json(
@@ -804,70 +913,76 @@ export async function GET(request) {
 
     const normalizedResultType = normalizeSearchResultType(resultType);
 
-    // Completely bypass normal text search waterfall for pure Image queries
+    // Completely bypass normal text search waterfall for pure Image queries - use live search
     if (normalizedResultType === "images") {
         try {
-            console.log(`[Search API] Executing Headless Image Search for: "${query}"`);
-            const results = await searchImagesWithBingHtml({ query, num: num * 2 });
+            console.log(`[Search API] Executing Live Image Search for: "${query}"`);
+            const results = await searchImagesLive({ query, num: num * 2 });
             return NextResponse.json(results);
         } catch (e) {
-            console.error("[Search API] Image Fallback failed:", e.message);
-            return NextResponse.json({
-                items: buildMockResults(query, num),
-                meta: {
-                    provider: "mock_images",
-                    isMock: true,
-                    totalResults: num,
-                    formattedTotalResults: String(num),
-                    searchTime: null,
-                    failures: [{ provider: "bing_images", error: e.message }]
-                }
-            });
+            console.error("[Search API] Image Live Search failed:", e.message);
+            // Try fallback to Bing HTML
+            try {
+                const fallbackResults = await searchImagesWithBingHtml({ query, num });
+                return NextResponse.json(fallbackResults);
+            } catch (fallbackError) {
+                console.error("[Search API] Image Fallback also failed:", fallbackError.message);
+                return NextResponse.json({
+                    items: [],
+                    meta: {
+                        provider: "no_images",
+                        isMock: false,
+                        totalResults: 0,
+                        formattedTotalResults: "0",
+                        searchTime: null,
+                        error: "No image results available"
+                    }
+                });
+            }
         }
     }
 
-    // Completely bypass normal text search waterfall for pure Video queries
+    // Completely bypass normal text search waterfall for pure Video queries - use live search
     if (normalizedResultType === "videos") {
         try {
-            console.log(`[Search API] Executing Headless Video Search for: "${query}"`);
-            const results = await searchVideosWithBingHtml({ query, num: num * 2 });
+            console.log(`[Search API] Executing Live Video Search for: "${query}"`);
+            const results = await searchVideosLive({ query, num: num * 2 });
             return NextResponse.json(results);
         } catch (e) {
-            console.error("[Search API] Video Fallback failed:", e.message);
-            return NextResponse.json({
-                items: buildMockResults(query, "videos"),
-                meta: {
-                    provider: "mock_videos",
-                    isMock: true,
-                    totalResults: num,
-                    formattedTotalResults: String(num),
-                    searchTime: null,
-                    failures: [{ provider: "bing_videos", error: e.message }]
-                }
-            });
+            console.error("[Search API] Video Live Search failed:", e.message);
+            // Try fallback to Bing HTML
+            try {
+                const fallbackResults = await searchVideosWithBingHtml({ query, num });
+                return NextResponse.json(fallbackResults);
+            } catch (fallbackError) {
+                console.error("[Search API] Video Fallback also failed:", fallbackError.message);
+                return NextResponse.json({
+                    items: [],
+                    meta: {
+                        provider: "no_videos",
+                        isMock: false,
+                        totalResults: 0,
+                        formattedTotalResults: "0",
+                        searchTime: null,
+                        error: "No video results available"
+                    }
+                });
+            }
         }
     }
 
-    const providerOrder = getSearchProviderOrder()
-        .filter((p) => p !== "google_html");
+    // Use live search providers (no API key required)
+    const providerOrder = ["bing_html", "google_html", "duckduckgo"];
     const attemptedProviders = [];
     const failures = [];
 
     for (const provider of providerOrder) {
-        if (provider === "mock") {
-            break;
-        }
-
         attemptedProviders.push(provider);
 
         try {
             let payload;
-            if (provider === "google") {
-                payload = await searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num, resultType });
-            } else if (provider === "google_html") {
+            if (provider === "google_html") {
                 payload = await searchWithGoogleHtml({ query, fileType, siteRestrict, num, resultType });
-            } else if (provider === "bing") {
-                payload = await searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType });
             } else if (provider === "bing_html") {
                 payload = await searchWithBingHtmlText({ query, num });
             } else {
@@ -892,40 +1007,75 @@ export async function GET(request) {
                 },
             });
         } catch (error) {
-            console.warn(`[search] ${provider} failed, trying fallback:`, error.message);
+            console.warn(`[search] ${provider} failed:`, error.message);
             failures.push({
                 provider,
                 message: error.message,
-                stack: error.stack,
             });
+        }
+    }
 
-            // If Google API failed because it's disabled or quota exceeded, proactively inject google_html
-            // if it's not already in the queue, to gracefully degrade to scraping.
-            if (provider === "google" && !providerOrder.includes("google_html")) {
-                const currentIndex = providerOrder.indexOf("google");
-                providerOrder.splice(currentIndex + 1, 0, "google_html");
+    // If all live providers fail, try API-based search as last resort
+    const apiProviderOrder = getSearchProviderOrder()
+        .filter((p) => p === "google" || p === "bing");
+
+    for (const provider of apiProviderOrder) {
+        if (provider === "mock") continue;
+        
+        attemptedProviders.push(provider);
+
+        try {
+            let payload;
+            if (provider === "google") {
+                payload = await searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num, resultType });
+            } else if (provider === "bing") {
+                payload = await searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType });
             }
+
+            return NextResponse.json({
+                items: payload.items,
+                meta: {
+                    query,
+                    resultType,
+                    fileType,
+                    siteRestrict,
+                    dateRestrict,
+                    provider: payload.meta.provider,
+                    requestedProvider: CUSTOM_SEARCH_PRIORITY,
+                    attemptedProviders,
+                    totalResults: payload.meta.totalResults,
+                    formattedTotalResults: payload.meta.formattedTotalResults,
+                    searchTime: payload.meta.searchTime,
+                    isMock: false,
+                },
+            });
+        } catch (error) {
+            console.warn(`[search] ${provider} API failed:`, error.message);
+            failures.push({
+                provider,
+                message: error.message,
+            });
         }
     }
 
     console.warn(`[search] All providers failed. Order was:`, providerOrder);
     console.warn(`[search] Failures:`, failures);
 
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
+    // Return empty results instead of mock
     return NextResponse.json({
-        items: buildMockResults(query, resultType),
+        items: [],
         meta: {
             query,
             resultType,
             fileType,
             siteRestrict,
             dateRestrict,
-            provider: "mock",
+            provider: "none",
             requestedProvider: CUSTOM_SEARCH_PRIORITY,
             attemptedProviders,
             failures,
-            isMock: true,
+            isMock: false,
+            error: "Search temporarily unavailable. Please try again."
         },
     });
 }
