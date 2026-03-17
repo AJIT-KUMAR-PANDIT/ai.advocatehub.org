@@ -30,3 +30,558 @@
  GET /search?q=indian+flag&type=images 200 in 22ms (compile: 6ms, render: 16ms)
 [Search API] Executing Headless Image Search for: "indian flag"
  GET /api/search?q=indian+flag&type=images 200 in 1039ms (compile: 1727µs, render: 1038ms)
+ GET /search?q=ajit+kumar+pandit&type=images 200 in 19ms (compile: 5ms, render: 14ms)
+[Search API] Executing Headless Image Search for: "ajit kumar pandit"
+ GET /api/search?q=ajit+kumar+pandit&type=images 200 in 676ms (compile: 1526µs, render: 675ms)
+ GET /search?q=ajit+kumar+pandit&type=images&dateRestrict=y1 200 in 17ms (compile: 2ms, render: 15ms)
+[Search API] Executing Headless Image Search for: "ajit kumar pandit"
+ GET /api/search?q=ajit+kumar+pandit&type=images&dateRestrict=y1 200 in 6ms (compile: 1169µs, render: 4ms)
+ GET /search?q=ajit+kumar+pandit&type=images 200 in 17ms (compile: 4ms, render: 13ms)
+[Search API] Executing Headless Image Search for: "ajit kumar pandit"
+ GET /api/search?q=ajit+kumar+pandit&type=images 200 in 6ms (compile: 1329µs, render: 5ms)
+ GET /search?q=ajit+kumar+pandit&type=videos 200 in 20ms (compile: 5ms, render: 15ms)
+[search] duckduckgo failed, trying fallback: DuckDuckGo blocked the automated request with a bot challenge.
+[search] google failed, trying fallback: This project does not have the access to Custom Search JSON API.
+[search] google_html failed, trying fallback: Google HTML returned no parsable search results (Possible layout change or block).
+[search] All providers failed. Order was: [ 'duckduckgo', 'google', 'google_html' ]
+[search] Failures: [
+  {
+    provider: 'duckduckgo',
+    message: 'DuckDuckGo blocked the automated request with a bot challenge.',
+    stack: 'Error: DuckDuckGo blocked the automated request with a bot challenge.\n' +
+      '    at searchWithDuckDuckGo (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1328:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1427:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google',
+    message: 'This project does not have the access to Custom Search JSON API.',
+    stack: 'Error: This project does not have the access to Custom Search JSON API.\n' +
+      '    at searchWithGoogle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1221:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1401:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google_html',
+    message: 'Google HTML returned no parsable search results (Possible layout change or block).',
+    stack: 'Error: Google HTML returned no parsable search results (Possible layout change or block).\n' +
+      '    at searchWithGoogleHtml (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1255:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1410:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  }
+]
+ GET /api/search?q=ajit+kumar+pandit&type=videos 200 in 3.3s (compile: 1318µs, render: 3.3s)
+ POST /api/search/summary 200 in 1903ms (compile: 7ms, render: 1896ms)
+ GET /search?q=ajit+kumar+pandit&type=web 200 in 19ms (compile: 6ms, render: 14ms)
+[search] duckduckgo failed, trying fallback: DuckDuckGo blocked the automated request with a bot challenge.
+[search] google failed, trying fallback: This project does not have the access to Custom Search JSON API.
+[search] google_html failed, trying fallback: Google HTML returned no parsable search results (Possible layout change or block).
+[search] All providers failed. Order was: [ 'duckduckgo', 'google', 'google_html' ]
+[search] Failures: [
+  {
+    provider: 'duckduckgo',
+    message: 'DuckDuckGo blocked the automated request with a bot challenge.',
+    stack: 'Error: DuckDuckGo blocked the automated request with a bot challenge.\n' +
+      '    at searchWithDuckDuckGo (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1328:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1427:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google',
+    message: 'This project does not have the access to Custom Search JSON API.',
+    stack: 'Error: This project does not have the access to Custom Search JSON API.\n' +
+      '    at searchWithGoogle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1221:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1401:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google_html',
+    message: 'Google HTML returned no parsable search results (Possible layout change or block).',
+    stack: 'Error: Google HTML returned no parsable search results (Possible layout change or block).\n' +
+      '    at searchWithGoogleHtml (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1255:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1410:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  }
+]
+ GET /api/search?q=ajit+kumar+pandit&type=web 200 in 2.4s (compile: 1333µs, render: 2.4s)
+ POST /api/search/summary 200 in 1621ms (compile: 6ms, render: 1615ms)
+ GET /search?q=ajit+kumar+pandit&type=web 200 in 86ms (compile: 3ms, render: 84ms)
+[search] duckduckgo failed, trying fallback: DuckDuckGo blocked the automated request with a bot challenge.
+[search] google failed, trying fallback: Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.
+[search] google_html failed, trying fallback: Google HTML returned no parsable search results (Possible layout change or block).
+[search] All providers failed. Order was: [ 'duckduckgo', 'google', 'google_html' ]
+[search] Failures: [
+  {
+    provider: 'duckduckgo',
+    message: 'DuckDuckGo blocked the automated request with a bot challenge.',
+    stack: 'Error: DuckDuckGo blocked the automated request with a bot challenge.\n' +
+      '    at searchWithDuckDuckGo (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1328:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1427:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google',
+    message: "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.",
+    stack: "Error: Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.\n" +
+      '    at searchWithGoogle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1221:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1401:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google_html',
+    message: 'Google HTML returned no parsable search results (Possible layout change or block).',
+    stack: 'Error: Google HTML returned no parsable search results (Possible layout change or block).\n' +
+      '    at searchWithGoogleHtml (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1255:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1410:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  }
+]
+ GET /api/search?q=ajit+kumar+pandit&type=web 200 in 2.9s (compile: 1082µs, render: 2.9s)
+ POST /api/search/summary 200 in 1579ms (compile: 7ms, render: 1572ms)
+ GET /search?q=ajit+kumar+pandit 200 in 20ms (compile: 5ms, render: 15ms)
+[search] duckduckgo failed, trying fallback: DuckDuckGo blocked the automated request with a bot challenge.
+[search] google failed, trying fallback: Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.
+[search] google_html failed, trying fallback: Google HTML returned no parsable search results (Possible layout change or block).
+[search] All providers failed. Order was: [ 'duckduckgo', 'google', 'google_html' ]
+[search] Failures: [
+  {
+    provider: 'duckduckgo',
+    message: 'DuckDuckGo blocked the automated request with a bot challenge.',
+    stack: 'Error: DuckDuckGo blocked the automated request with a bot challenge.\n' +
+      '    at searchWithDuckDuckGo (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1328:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1427:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google',
+    message: "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.",
+    stack: "Error: Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.\n" +
+      '    at searchWithGoogle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1221:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1401:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google_html',
+    message: 'Google HTML returned no parsable search results (Possible layout change or block).',
+    stack: 'Error: Google HTML returned no parsable search results (Possible layout change or block).\n' +
+      '    at searchWithGoogleHtml (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1255:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1410:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  }
+]
+ GET /api/search?q=ajit+kumar+pandit&type=all 200 in 2.0s (compile: 1516µs, render: 2.0s)
+ POST /api/search/summary 200 in 1926ms (compile: 5ms, render: 1921ms)
+ GET /search?q=ajit+kumar+pandit 200 in 31ms (compile: 3ms, render: 28ms)
+[search] duckduckgo failed, trying fallback: DuckDuckGo blocked the automated request with a bot challenge.
+[search] google failed, trying fallback: Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.
+[search] google_html failed, trying fallback: Google HTML returned no parsable search results (Possible layout change or block).
+[search] All providers failed. Order was: [ 'duckduckgo', 'google', 'google_html' ]
+[search] Failures: [
+  {
+    provider: 'duckduckgo',
+    message: 'DuckDuckGo blocked the automated request with a bot challenge.',
+    stack: 'Error: DuckDuckGo blocked the automated request with a bot challenge.\n' +
+      '    at searchWithDuckDuckGo (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1328:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1427:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google',
+    message: "Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.",
+    stack: "Error: Quota exceeded for quota metric 'Queries' and limit 'Queries per day' of service 'customsearch.googleapis.com' for consumer 'project_number:734511344619'.\n" +
+      '    at searchWithGoogle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1221:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1401:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google_html',
+    message: 'Google HTML returned no parsable search results (Possible layout change or block).',
+    stack: 'Error: Google HTML returned no parsable search results (Possible layout change or block).\n' +
+      '    at searchWithGoogleHtml (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1255:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1410:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  }
+]
+ GET /api/search?q=ajit+kumar+pandit&type=all 200 in 2.3s (compile: 1430µs, render: 2.3s)
+ GET /search?q=ajit+kumar+pandit&type=images 200 in 16ms (compile: 3ms, render: 13ms)
+[Search API] Executing Headless Image Search for: "ajit kumar pandit"
+ GET /api/search?q=ajit+kumar+pandit&type=images 200 in 5ms (compile: 1102µs, render: 4ms)
+ POST /api/search/summary 200 in 480ms (compile: 3ms, render: 477ms)
+ GET /search?q=nakprc&type=images 200 in 18ms (compile: 3ms, render: 14ms)
+[Search API] Executing Headless Image Search for: "nakprc"
+ GET /api/search?q=nakprc&type=images 200 in 647ms (compile: 1141µs, render: 646ms)
+ GET /search?q=nakprc 200 in 18ms (compile: 6ms, render: 13ms)
+[search] duckduckgo failed, trying fallback: DuckDuckGo blocked the automated request with a bot challenge.
+[search] google failed, trying fallback: This project does not have the access to Custom Search JSON API.
+[search] google_html failed, trying fallback: Google HTML returned no parsable search results (Possible layout change or block).
+[search] All providers failed. Order was: [ 'duckduckgo', 'google', 'google_html' ]
+[search] Failures: [
+  {
+    provider: 'duckduckgo',
+    message: 'DuckDuckGo blocked the automated request with a bot challenge.',
+    stack: 'Error: DuckDuckGo blocked the automated request with a bot challenge.\n' +
+      '    at searchWithDuckDuckGo (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1328:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1427:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google',
+    message: 'This project does not have the access to Custom Search JSON API.',
+    stack: 'Error: This project does not have the access to Custom Search JSON API.\n' +
+      '    at searchWithGoogle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1221:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1401:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  },
+  {
+    provider: 'google_html',
+    message: 'Google HTML returned no parsable search results (Possible layout change or block).',
+    stack: 'Error: Google HTML returned no parsable search results (Possible layout change or block).\n' +
+      '    at searchWithGoogleHtml (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1255:15)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+      '    at async GET (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/[root-of-the-server]__62026f91._.js:1410:27)\n' +
+      '    at async AppRouteRouteModule.do (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:37866)\n' +
+      '    at async AppRouteRouteModule.handle (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:5:45156)\n' +
+      '    at async responseGenerator (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15344:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.dev.js:1:191938)\n' +
+      '    at async handleResponse (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15407:32)\n' +
+      '    at async Module.handler (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/chunks/node_modules_next_6b8d2265._.js:15460:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1442:9)\n' +
+      '    at async DevServer.renderPageComponent (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1494:24)\n' +
+      '    at async DevServer.renderToResponseImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1544:32)\n' +
+      '    at async DevServer.pipeImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:1038:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/next-server.js:395:17)\n' +
+      '    at async DevServer.handleRequestImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/base-server.js:929:17)\n' +
+      '    at async /Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:387:20\n' +
+      '    at async Span.traceAsyncFn (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/trace/trace.js:157:20)\n' +
+      '    at async DevServer.handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/dev/next-dev-server.js:383:24)\n' +
+      '    at async invokeRender (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:248:21)\n' +
+      '    at async handleRequest (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:447:24)\n' +
+      '    at async requestHandlerImpl (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/router-server.js:496:13)\n' +
+      '    at async Server.requestListener (/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/node_modules/next/dist/server/lib/start-server.js:226:13)'
+  }
+]
+ GET /api/search?q=nakprc&type=all 200 in 4.0s (compile: 1070µs, render: 4.0s)
+ POST /api/search/summary 200 in 2.3s (compile: 3ms, render: 2.3s)
