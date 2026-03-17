@@ -4798,3 +4798,68 @@
  GET /search?q=google 200 in 88ms (compile: 74ms, render: 14ms)
 ✓ Compiled in 14ms
  POST /api/ai 200 in 13.8s (compile: 4ms, render: 13.8s)
+Persisting failed: Unable to open static sorted file referenced from 00000328.meta
+
+Caused by:
+    0: Unable to open static sorted file 00000325.sst
+    1: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (912181) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Data for <DiskFileSystem as FileSystem>::read (TaskId 181693))
+
+Caused by:
+    0: Looking up data for TaskId 181693 from database failed
+    1: Unable to open static sorted file referenced from 00000185.meta
+    2: Unable to open static sorted file 00000184.sst
+    3: No such file or directory (os error 2)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'tokio-runtime-worker' (1237637) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for BeforeResolvePluginCondition::matches (TaskId 181699))
+
+Caused by:
+    0: Looking up data for TaskId 181699 from database failed
+    1: Unable to open static sorted file referenced from 00000180.meta
+    2: Unable to open static sorted file 00000175.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1257633) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::process (TaskId 181720))
+
+Caused by:
+    0: Looking up data for TaskId 181720 from database failed
+    1: Unable to open static sorted file referenced from 00000329.meta
+    2: Unable to open static sorted file 00000323.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1238261) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_side_effect_free_declaration (TaskId 181741))
+
+Caused by:
+    0: Looking up data for TaskId 181741 from database failed
+    1: Unable to open static sorted file referenced from 00000291.meta
+    2: Unable to open static sorted file 00000287.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1239424) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for value_to_string (TaskId 181760))
+
+Caused by:
+    0: Looking up data for TaskId 181760 from database failed
+    1: Unable to open static sorted file referenced from 00000257.meta
+    2: Unable to open static sorted file 00000254.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1239420) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <EsmAssetReference as ChunkableModuleReference>::chunking_type (TaskId 181763))
+
+Caused by:
+    0: Looking up data for TaskId 181763 from database failed
+    1: Unable to open static sorted file referenced from 00000221.meta
+    2: Unable to open static sorted file 00000217.sst
+    3: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

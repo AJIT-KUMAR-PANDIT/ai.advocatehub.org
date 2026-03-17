@@ -9,7 +9,8 @@ import {
     CUSTOM_SEARCH_PRIORITY,
     getSearchProviderOrder,
     BING_HTML_IMAGE_CONFIG,
-    BING_HTML_TEXT_CONFIG
+    BING_HTML_TEXT_CONFIG,
+    BING_HTML_VIDEO_CONFIG
 } from "@/lib/searchConfig";
 import {
     buildSearchRedirectDisplayUrl,
@@ -305,9 +306,8 @@ async function searchImagesWithBingHtml({ query, num }) {
     const url = new URL(baseUrl);
     
     url.searchParams.set("q", query);
-    url.searchParams.set("form", "HDRSC2"); // Image search form code
+    url.searchParams.set("form", "HDRSC2");
     url.searchParams.set("first", "1");
-    // Attempt to request a safe search environment natively
     url.searchParams.set("adlt", "moderate");
 
     const startTime = Date.now();
@@ -318,7 +318,7 @@ async function searchImagesWithBingHtml({ query, num }) {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language": "en-IN,en-US;q=0.9,en;q=0.8",
         },
-        next: { revalidate: 3600 } // Cache images aggressively for 1 hour to prevent IP bans
+        next: { revalidate: 3600 }
     });
 
     if (!response.ok) {
@@ -326,7 +326,7 @@ async function searchImagesWithBingHtml({ query, num }) {
     }
 
     const html = await response.text();
-    const items = parseBingHtmlImages(html, num || 20); // Get more images than text (default 20)
+    const items = parseBingHtmlImages(html, num || 20);
 
     if (items.length === 0) {
         throw new Error("Bing HTML Image Search returned no parsable images.");
@@ -336,6 +336,206 @@ async function searchImagesWithBingHtml({ query, num }) {
         items,
         meta: {
             provider: "bing_images",
+            totalResults: items.length,
+            formattedTotalResults: String(items.length),
+            searchTime: (Date.now() - startTime) / 1000,
+        },
+    };
+}
+
+function parseBingHtmlVideos(html, num) {
+    const results = [];
+    
+    // Bing videos - look for video result containers
+    const videoBlocks = html.match(/class="mc[^"]*"[^>]*>(.*?)class="meta"/g) || [];
+    
+    // Alternative parsing - look for video items in the results
+    const vidTileRegex = /class="[^"]*vid[^"]*"[^>]*>([\s\S]*?)<\/li>/gi;
+    const titleRegex = /<a[^>]*class="[^"]*title[^"]*"[^>]*>([^<]+)<\/a>/i;
+    const linkRegex = /href="([^"]*\/watch\?[^"]*)"/i;
+    const thumbRegex = /<img[^>]*src="([^"]*)"[^>]*>/i;
+    const durationRegex = /<span[^>]*class="[^"]*dur[^"]*"[^>]*>([^<]+)<\/span>/i;
+    
+    // Try parsing with different approach - look for video result items
+    const resultItems = html.split(/<li[^>]*class="[^"]*b[^_"]*_video[^"]*"[^>]*>/gi);
+    
+    for (let i = 1; i < resultItems.length && results.length < num; i++) {
+        const block = resultItems[i];
+        
+        // Extract title
+        const titleMatch = block.match(/<a[^>]*class="[^"]*mv_title[^"]*"[^>]*>([^<]+)<\/a>/i) ||
+                          block.match(/<a[^>]*class="[^"]*title[^"]*"[^>]*>([^<]+)<\/a>/i) ||
+                          block.match(/<h3[^>]*>([^<]+)<\/h3>/i);
+        
+        // Extract video link
+        const linkMatch = block.match(/href="(\/watch\?[^"]+)"/i) ||
+                         block.match(/href="(https?:\/\/[^"]+\/watch\?[^"]+)"/i);
+        
+        // Extract thumbnail
+        const thumbMatch = block.match(/<img[^>]*src="([^"]+)"/i);
+        
+        // Extract duration
+        const durationMatch = block.match(/<span[^>]*>([\d:]+\s*min)/i);
+        
+        // Extract source/channel
+        const sourceMatch = block.match(/class="[^"]*cl[^"]*"[^>]*>([^<]+)<\/span>/i) ||
+                           block.match(/class="[^"]*cite[^"]*"[^>]*>([^<]+)<\/span>/i);
+        
+        if (titleMatch && linkMatch) {
+            const title = titleMatch[1].replace(/<[^>]*>/g, '').trim();
+            let link = linkMatch[1];
+            if (!link.startsWith('http')) {
+                link = 'https://www.bing.com' + link;
+            }
+            
+            results.push({
+                title: title,
+                link: link,
+                formattedUrl: new URL(link).hostname.replace('www.', ''),
+                snippet: sourceMatch ? sourceMatch[1].replace(/<[^>]*>/g, '').trim() : '',
+                duration: durationMatch ? durationMatch[1].trim() : '',
+                thumbnail: thumbMatch ? thumbMatch[1] : '',
+                video: true
+            });
+        }
+    }
+    
+    // Fallback: Parse YouTube links from the HTML
+    if (results.length < num) {
+        const youtubeRegex = /href="(https?:\/\/(?:www\.)?youtube\.com\/watch\?[^"]+)"/gi;
+        let match;
+        while ((match = youtubeRegex.exec(html)) !== null && results.length < num * 2) {
+            const videoUrl = match[1];
+            const urlObj = new URL(videoUrl);
+            const vId = urlObj.searchParams.get('v');
+            
+            if (vId && !results.find(r => r.link.includes(vId))) {
+                results.push({
+                    title: `YouTube Video`,
+                    link: videoUrl,
+                    formattedUrl: "youtube.com",
+                    snippet: `Video content`,
+                    thumbnail: `https://img.youtube.com/vi/${vId}/mqdefault.jpg`,
+                    video: true
+                });
+            }
+        }
+    }
+    
+    // Parse YouTube Shorts
+    if (results.length < num) {
+        const shortsRegex = /href="(https?:\/\/(?:www\.)?youtube\.com\/shorts\/[^"?]+)"/gi;
+        let match;
+        while ((match = shortsRegex.exec(html)) !== null && results.length < num * 2) {
+            const videoUrl = match[1];
+            const videoId = videoUrl.split('/shorts/')[1]?.split('?')[0];
+            
+            if (videoId && !results.find(r => r.link.includes(videoId))) {
+                results.push({
+                    title: `YouTube Shorts`,
+                    link: videoUrl,
+                    formattedUrl: "youtube.com",
+                    snippet: `Short video content`,
+                    thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`,
+                    video: true
+                });
+            }
+        }
+    }
+    
+    // Parse Dailymotion
+    if (results.length < num) {
+        const dailymotionRegex = /href="(https?:\/\/(?:www\.)?dailymotion\.com\/video\/[^"?_]+)"/gi;
+        let match;
+        while ((match = dailymotionRegex.exec(html)) !== null && results.length < num * 2) {
+            const videoUrl = match[1];
+            if (!results.find(r => r.link === videoUrl)) {
+                results.push({
+                    title: `Dailymotion Video`,
+                    link: videoUrl,
+                    formattedUrl: "dailymotion.com",
+                    snippet: `Video content on Dailymotion`,
+                    video: true
+                });
+            }
+        }
+    }
+    
+    // Parse Vimeo
+    if (results.length < num) {
+        const vimeoRegex = /href="(https?:\/\/(?:www\.)?vimeo\.com\/\d+)"/gi;
+        let match;
+        while ((match = vimeoRegex.exec(html)) !== null && results.length < num * 2) {
+            const videoUrl = match[1];
+            if (!results.find(r => r.link === videoUrl)) {
+                results.push({
+                    title: `Vimeo Video`,
+                    link: videoUrl,
+                    formattedUrl: "vimeo.com",
+                    snippet: `Video content on Vimeo`,
+                    video: true
+                });
+            }
+        }
+    }
+    
+    return results;
+    
+    // Also add Dailymotion and Vimeo
+    if (results.length < num) {
+        const dailymotionRegex = /href="(https?:\/\/(?:www\.)?dailymotion\.com\/video\/[^"]+)"/gi;
+        let match;
+        while ((match = dailymotionRegex.exec(html)) !== null && results.length < num * 2) {
+            if (!results.find(r => r.link === match[1])) {
+                results.push({
+                    title: `${query} - Dailymotion`,
+                    link: match[1],
+                    formattedUrl: "dailymotion.com",
+                    snippet: `Video content on Dailymotion related to ${query}`,
+                    video: true
+                });
+            }
+        }
+    }
+    
+    return results;
+}
+
+async function searchVideosWithBingHtml({ query, num }) {
+    const { baseUrl, userAgent } = BING_HTML_VIDEO_CONFIG;
+    const url = new URL(baseUrl);
+    
+    url.searchParams.set("q", query);
+    url.searchParams.set("first", "1");
+    url.searchParams.set("adlt", "moderate");
+    url.searchParams.set("form", "HDRSC1");
+
+    const startTime = Date.now();
+
+    const response = await fetch(url.toString(), {
+        headers: {
+            "User-Agent": userAgent,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,video/webp,*/*;q=0.8",
+            "Accept-Language": "en-IN,en-US;q=0.9,en;q=0.8",
+        },
+        next: { revalidate: 3600 }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Bing HTML Video Search failed: ${response.status}`);
+    }
+
+    const html = await response.text();
+    const items = parseBingHtmlVideos(html, num || 15);
+
+    if (items.length === 0) {
+        throw new Error("Bing HTML Video Search returned no parsable videos.");
+    }
+
+    return {
+        items,
+        meta: {
+            provider: "bing_videos",
             totalResults: items.length,
             formattedTotalResults: String(items.length),
             searchTime: (Date.now() - startTime) / 1000,
@@ -608,11 +808,10 @@ export async function GET(request) {
     if (normalizedResultType === "images") {
         try {
             console.log(`[Search API] Executing Headless Image Search for: "${query}"`);
-            const results = await searchImagesWithBingHtml({ query, num: num * 2 }); // Double num for galleries
+            const results = await searchImagesWithBingHtml({ query, num: num * 2 });
             return NextResponse.json(results);
         } catch (e) {
             console.error("[Search API] Image Fallback failed:", e.message);
-            // Fallback to text mock if images completely fail
             return NextResponse.json({
                 items: buildMockResults(query, num),
                 meta: {
@@ -622,6 +821,28 @@ export async function GET(request) {
                     formattedTotalResults: String(num),
                     searchTime: null,
                     failures: [{ provider: "bing_images", error: e.message }]
+                }
+            });
+        }
+    }
+
+    // Completely bypass normal text search waterfall for pure Video queries
+    if (normalizedResultType === "videos") {
+        try {
+            console.log(`[Search API] Executing Headless Video Search for: "${query}"`);
+            const results = await searchVideosWithBingHtml({ query, num: num * 2 });
+            return NextResponse.json(results);
+        } catch (e) {
+            console.error("[Search API] Video Fallback failed:", e.message);
+            return NextResponse.json({
+                items: buildMockResults(query, "videos"),
+                meta: {
+                    provider: "mock_videos",
+                    isMock: true,
+                    totalResults: num,
+                    formattedTotalResults: String(num),
+                    searchTime: null,
+                    failures: [{ provider: "bing_videos", error: e.message }]
                 }
             });
         }

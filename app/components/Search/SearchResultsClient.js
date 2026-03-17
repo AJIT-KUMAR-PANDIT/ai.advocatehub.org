@@ -6,6 +6,7 @@ import axios from "axios";
 import SearchHeader from "./SearchHeader";
 import ResultItem from "./ResultItem";
 import ResultImageItem from "./ResultImageItem";
+import ResultVideoItem from "./ResultVideoItem";
 import ResultSkeleton from "./ResultSkeleton";
 import SearchSummaryCard from "./SearchSummaryCard";
 import SearchFiltersBar from "./SearchFiltersBar";
@@ -110,8 +111,8 @@ export default function SearchResultsClient() {
                 setResults(items);
                 setMeta(res.data.meta || null);
 
-                // Do not fetch AI summaries if searching for images
-                if (items.length > 0 && resultType !== "images") {
+                // Do not fetch AI summaries if searching for images or videos
+                if (items.length > 0 && resultType !== "images" && resultType !== "videos") {
                     try {
                         const summaryRes = await axios.post(
                             "/api/search/summary",
@@ -264,6 +265,12 @@ export default function SearchResultsClient() {
                                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                                     {results.map((item, index) => (
                                         <ResultImageItem key={index} result={item} />
+                                    ))}
+                                </div>
+                            ) : resultType === "videos" ? (
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+                                    {results.map((item, index) => (
+                                        <ResultVideoItem key={index} result={item} />
                                     ))}
                                 </div>
                             ) : (
