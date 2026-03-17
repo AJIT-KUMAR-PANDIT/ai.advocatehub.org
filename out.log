@@ -4863,3 +4863,23 @@ Caused by:
     3: No such file or directory (os error 2)
 Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
 Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (1233251) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for ResolveOrigin::resolve_options (TaskId 181769))
+
+Caused by:
+    0: Looking up data for TaskId 181769 from database failed
+    1: Unable to open static sorted file referenced from 00000191.meta
+    2: Unable to open static sorted file 00000187.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1237618) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for follow_reexports (TaskId 181792))
+
+Caused by:
+    0: Looking up data for TaskId 181792 from database failed
+    1: Unable to open static sorted file referenced from 00000319.meta
+    2: Unable to open static sorted file 00000313.sst
+    3: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

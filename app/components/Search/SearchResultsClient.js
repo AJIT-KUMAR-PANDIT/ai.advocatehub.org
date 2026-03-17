@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import SearchHeader from "./SearchHeader";
@@ -34,11 +34,15 @@ export default function SearchResultsClient() {
 
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState(null);
     const [meta, setMeta] = useState(null);
     const [summary, setSummary] = useState(null);
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState(null);
+    const [visibleCount, setVisibleCount] = useState(8);
+    
+    const loadMoreRef = useRef(null);
 
     const providerLabel = meta?.provider === "bing"
         ? "Bing Custom Search"
@@ -82,6 +86,7 @@ export default function SearchResultsClient() {
             setSummary(null);
             setSummaryLoading(false);
             setSummaryError(null);
+            setVisibleCount(8);
             return;
         }
 
@@ -95,6 +100,7 @@ export default function SearchResultsClient() {
             setSummary(null);
             setSummaryLoading(true);
             setSummaryError(null);
+            setVisibleCount(8);
 
             try {
                 const res = await axios.get("/api/search", {
@@ -148,6 +154,38 @@ export default function SearchResultsClient() {
 
         return () => controller.abort();
     }, [query, resultType, siteRestrict, dateRestrict]);
+
+    // Lazy loading for videos - load more when scrolling
+    const handleLoadMore = useCallback(() => {
+        if (loadingMore || visibleCount >= results.length) return;
+        setLoadingMore(true);
+        setTimeout(() => {
+            setVisibleCount(prev => Math.min(prev + 8, results.length));
+            setLoadingMore(false);
+        }, 300);
+    }, [loadingMore, visibleCount, results.length]);
+
+    useEffect(() => {
+        if (resultType !== "videos" || results.length === 0) return;
+        
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && visibleCount < results.length) {
+                    handleLoadMore();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (loadMoreRef.current) {
+            observer.observe(loadMoreRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [resultType, results.length, visibleCount, handleLoadMore]);
+
+    const visibleResults = resultType === "videos" ? results.slice(0, visibleCount) : results;
+    const hasMoreVideos = resultType === "videos" && visibleCount < results.length;
 
     return (
         <div className="app-shell flex min-h-screen flex-col">
@@ -268,11 +306,34 @@ export default function SearchResultsClient() {
                                     ))}
                                 </div>
                             ) : resultType === "videos" ? (
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
-                                    {results.map((item, index) => (
-                                        <ResultVideoItem key={index} result={item} />
-                                    ))}
-                                </div>
+                                <>
+                                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+                                        {visibleResults.map((item, index) => (
+                                            <ResultVideoItem key={index} result={item} />
+                                        ))}
+                                    </div>
+                                    {hasMoreVideos && (
+                                        <div ref={loadMoreRef} className="flex justify-center py-6">
+                                            <button
+                                                onClick={handleLoadMore}
+                                                disabled={loadingMore}
+                                                className="action-primary px-6 py-3 text-sm font-semibold disabled:opacity-50"
+                                            >
+                                                {loadingMore ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                        </svg>
+                                                        Loading...
+                                                    </span>
+                                                ) : (
+                                                    `Load More (${results.length - visibleCount} remaining)`
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
                             ) : (
                                 <div className="space-y-4">
                                     {results.map((item, index) => (
