@@ -8,7 +8,8 @@ import {
     buildGoogleSearchUrl,
     CUSTOM_SEARCH_PRIORITY,
     getSearchProviderOrder,
-    BING_HTML_IMAGE_CONFIG
+    BING_HTML_IMAGE_CONFIG,
+    BING_HTML_TEXT_CONFIG
 } from "@/lib/searchConfig";
 import {
     buildSearchRedirectDisplayUrl,
@@ -160,6 +161,111 @@ function parseDuckDuckGoHtmlResults(html, num) {
 
 function isDuckDuckGoChallengePage(html = "") {
     return html.includes("Bot Activity Detected") || html.includes("challenge") || html.includes("blocked");
+}
+
+function parseBingHtmlTextResults(html, num) {
+    const results = [];
+    let idx = html.indexOf('<li class="b_algo"');
+
+    while (idx !== -1 && results.length < num) {
+        const endBlock = html.indexOf('</li>', idx);
+        if (endBlock === -1) break;
+        
+        const block = html.substring(idx, endBlock);
+        
+        const h2Start = block.indexOf('<h2>');
+        if (h2Start !== -1) {
+            const h2End = block.indexOf('</h2>', h2Start);
+            const h2Html = block.substring(h2Start, h2End);
+            
+            const hrefStart = h2Html.indexOf('href="');
+            if (hrefStart !== -1) {
+                const hrefStartPos = hrefStart + 6;
+                const hrefEnd = h2Html.indexOf('"', hrefStartPos);
+                const targetUrl = h2Html.substring(hrefStartPos, hrefEnd);
+                
+                const titleText = h2Html.replace(/<[^>]+>/g, '').trim();
+                
+                let snippet = "";
+                const snipDivStart = block.indexOf('class="b_caption"');
+                if (snipDivStart !== -1) {
+                    const pStart = block.indexOf('<p', snipDivStart);
+                    if (pStart !== -1) {
+                        let pEnd = block.indexOf('</p>', pStart);
+                        if (pEnd === -1) pEnd = block.indexOf('</div>', pStart);
+                        snippet = block.substring(pStart, pEnd !== -1 ? pEnd : block.length).replace(/<[^>]+>/g, '').trim();
+                    } else {
+                       const startBody = block.indexOf('>', snipDivStart) + 1;
+                       const endBody = block.indexOf('</div>', startBody);
+                       if (endBody !== -1) {
+                           snippet = block.substring(startBody, endBody).replace(/<[^>]+>/g, '').substring(0, 150).trim() + "...";
+                       }
+                    }
+                }
+                
+                if (!snippet) {
+                    const fallbackP = block.indexOf('<p');
+                    if (fallbackP !== -1) {
+                        const fallbackPEnd = block.indexOf('</p>', fallbackP);
+                        snippet = block.substring(fallbackP, fallbackPEnd !== -1 ? fallbackPEnd : block.length).replace(/<[^>]+>/g, '').trim();
+                    }
+                }
+                
+                if (targetUrl.startsWith('http')) {
+                    results.push({
+                        title: titleText,
+                        link: targetUrl,
+                        snippet: snippet || titleText,
+                        formattedUrl: targetUrl
+                    });
+                }
+            }
+        }
+        idx = html.indexOf('<li class="b_algo"', endBlock);
+    }
+
+    return results;
+}
+
+async function searchWithBingHtmlText({ query, num }) {
+    const { baseUrl, userAgent } = BING_HTML_TEXT_CONFIG;
+    const url = new URL(baseUrl);
+    
+    url.searchParams.set("q", query);
+    url.searchParams.set("first", "1");
+    url.searchParams.set("adlt", "moderate");
+
+    const startTime = Date.now();
+
+    const response = await fetch(url.toString(), {
+        headers: {
+            "User-Agent": userAgent,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-IN,en-US;q=0.9,en;q=0.8",
+        },
+        next: { revalidate: 60 }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Bing HTML Text Search failed: ${response.status}`);
+    }
+
+    const html = await response.text();
+    const items = parseBingHtmlTextResults(html, num || 10);
+
+    if (items.length === 0) {
+        throw new Error("Bing HTML Text Search returned no parsable items.");
+    }
+
+    return {
+        items,
+        meta: {
+            provider: "bing_html",
+            totalResults: items.length,
+            formattedTotalResults: String(items.length),
+            searchTime: (Date.now() - startTime) / 1000,
+        },
+    };
 }
 
 function parseBingHtmlImages(html, num) {
@@ -541,6 +647,8 @@ export async function GET(request) {
                 payload = await searchWithGoogleHtml({ query, fileType, siteRestrict, num, resultType });
             } else if (provider === "bing") {
                 payload = await searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType });
+            } else if (provider === "bing_html") {
+                payload = await searchWithBingHtmlText({ query, num });
             } else {
                 payload = await searchWithDuckDuckGo({ query, fileType, siteRestrict, num, resultType });
             }
