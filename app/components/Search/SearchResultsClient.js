@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import SearchHeader from "./SearchHeader";
 import ResultItem from "./ResultItem";
+import ResultImageItem from "./ResultImageItem";
 import ResultSkeleton from "./ResultSkeleton";
 import SearchSummaryCard from "./SearchSummaryCard";
 import SearchFiltersBar from "./SearchFiltersBar";
@@ -109,7 +110,8 @@ export default function SearchResultsClient() {
                 setResults(items);
                 setMeta(res.data.meta || null);
 
-                if (items.length > 0) {
+                // Do not fetch AI summaries if searching for images
+                if (items.length > 0 && resultType !== "images") {
                     try {
                         const summaryRes = await axios.post(
                             "/api/search/summary",
@@ -258,11 +260,19 @@ export default function SearchResultsClient() {
                                 <p className="mt-3 text-base leading-7">{error}</p>
                             </div>
                         ) : results.length > 0 ? (
-                            <div className="space-y-4">
-                                {results.map((item, index) => (
-                                    <ResultItem key={index} result={item} />
-                                ))}
-                            </div>
+                            resultType === "images" ? (
+                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                                    {results.map((item, index) => (
+                                        <ResultImageItem key={index} result={item} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {results.map((item, index) => (
+                                        <ResultItem key={index} result={item} />
+                                    ))}
+                                </div>
+                            )
                         ) : query ? (
                             <div className="surface-panel-strong rounded-[28px] p-6">
                                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#8f6a52]">

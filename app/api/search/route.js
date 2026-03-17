@@ -8,6 +8,7 @@ import {
     buildGoogleSearchUrl,
     CUSTOM_SEARCH_PRIORITY,
     getSearchProviderOrder,
+    BING_HTML_IMAGE_CONFIG
 } from "@/lib/searchConfig";
 import {
     buildSearchRedirectDisplayUrl,
@@ -158,7 +159,82 @@ function parseDuckDuckGoHtmlResults(html, num) {
 }
 
 function isDuckDuckGoChallengePage(html = "") {
-    return html.includes("anomaly-modal") || html.includes("Unfortunately, bots use DuckDuckGo too.");
+    return html.includes("Bot Activity Detected") || html.includes("challenge") || html.includes("blocked");
+}
+
+function parseBingHtmlImages(html, num) {
+    const results = [];
+    // Bing images stores JSON data in the `m` attribute of `<a class="iusc">` tags
+    const blockRegex = /class="iusc"[^>]*m="(.*?)"/g;
+
+    let match;
+    while ((match = blockRegex.exec(html)) !== null && results.length < num) {
+        try {
+            // Bing escapes quotes in the HTML attribute
+            const jsonData = match[1].replace(/&quot;/g, '"');
+            const data = JSON.parse(jsonData);
+
+            if (data.murl) {
+                results.push({
+                    title: data.t || data.desc || "Image",
+                    link: data.purl || data.murl, // Source page URL
+                    formattedUrl: data.purl || data.murl,
+                    snippet: data.desc || data.t || "",
+                    image: {
+                        thumbnailLink: data.turl || data.murl,
+                        url: data.murl, 
+                    }
+                });
+            }
+        } catch (e) {
+            // Ignore parse errors for individual blocks
+        }
+    }
+
+    return results;
+}
+
+async function searchImagesWithBingHtml({ query, num }) {
+    const { baseUrl, userAgent } = BING_HTML_IMAGE_CONFIG;
+    const url = new URL(baseUrl);
+    
+    url.searchParams.set("q", query);
+    url.searchParams.set("form", "HDRSC2"); // Image search form code
+    url.searchParams.set("first", "1");
+    // Attempt to request a safe search environment natively
+    url.searchParams.set("adlt", "moderate");
+
+    const startTime = Date.now();
+
+    const response = await fetch(url.toString(), {
+        headers: {
+            "User-Agent": userAgent,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-IN,en-US;q=0.9,en;q=0.8",
+        },
+        next: { revalidate: 3600 } // Cache images aggressively for 1 hour to prevent IP bans
+    });
+
+    if (!response.ok) {
+        throw new Error(`Bing HTML Image Search failed: ${response.status}`);
+    }
+
+    const html = await response.text();
+    const items = parseBingHtmlImages(html, num || 20); // Get more images than text (default 20)
+
+    if (items.length === 0) {
+        throw new Error("Bing HTML Image Search returned no parsable images.");
+    }
+
+    return {
+        items,
+        meta: {
+            provider: "bing_images",
+            totalResults: items.length,
+            formattedTotalResults: String(items.length),
+            searchTime: (Date.now() - startTime) / 1000,
+        },
+    };
 }
 
 function buildMockResults(query, resultType = "all") {
@@ -407,7 +483,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
 
     const query        = searchParams.get("q");
-    const resultType   = normalizeSearchResultType(searchParams.get("type") || searchParams.get("resultType") || "all");
+    const resultType   = searchParams.get("type") || searchParams.get("resultType") || "all";
     const fileType     = searchParams.get("fileType") || null;
     const siteRestrict = searchParams.get("siteRestrict") || null;
     const dateRestrict = searchParams.get("dateRestrict") || null;
@@ -420,7 +496,33 @@ export async function GET(request) {
         );
     }
 
-    const providerOrder = getSearchProviderOrder();
+    const normalizedResultType = normalizeSearchResultType(resultType);
+
+    // Completely bypass normal text search waterfall for pure Image queries
+    if (normalizedResultType === "images") {
+        try {
+            console.log(`[Search API] Executing Headless Image Search for: "${query}"`);
+            const results = await searchImagesWithBingHtml({ query, num: num * 2 }); // Double num for galleries
+            return NextResponse.json(results);
+        } catch (e) {
+            console.error("[Search API] Image Fallback failed:", e.message);
+            // Fallback to text mock if images completely fail
+            return NextResponse.json({
+                items: buildMockResults(query, num),
+                meta: {
+                    provider: "mock_images",
+                    isMock: true,
+                    totalResults: num,
+                    formattedTotalResults: String(num),
+                    searchTime: null,
+                    failures: [{ provider: "bing_images", error: e.message }]
+                }
+            });
+        }
+    }
+
+    const providerOrder = getSearchProviderOrder()
+        .filter((p) => p !== "google_html");
     const attemptedProviders = [];
     const failures = [];
 

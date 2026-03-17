@@ -1,0 +1,32 @@
+
+> ai.advocatehub.org@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.8:3000
+- Environments: .env
+
+✓ Starting...
+✓ Ready in 235ms
+ GET /search?q=court+building&type=images 200 in 1207ms (compile: 1123ms, render: 84ms)
+[Search API] Executing Headless Image Search for: "court building"
+ GET /api/search?q=court+building&type=images 200 in 893ms (compile: 98ms, render: 795ms)
+ POST /api/search/summary 200 in 2.2s (compile: 264ms, render: 1919ms)
+[Search API] Executing Headless Image Search for: "cats"
+ GET /api/search?q=cats&type=images 200 in 649ms (compile: 1602µs, render: 648ms)
+[Search API] Executing Headless Image Search for: "cats"
+ GET /api/search?q=cats&type=images 200 in 5ms (compile: 1419µs, render: 3ms)
+✓ Compiled in 37ms
+✓ Compiled in 41ms
+[Search API] Executing Headless Image Search for: "cats"
+ GET /api/search?q=cats&type=images 200 in 4ms (compile: 1180µs, render: 3ms)
+ GET /AImode 200 in 211ms (compile: 178ms, render: 34ms)
+ GET / 200 in 168ms (compile: 155ms, render: 13ms)
+ GET /search?q=court+building&type=images 200 in 47ms (compile: 34ms, render: 13ms)
+[Search API] Executing Headless Image Search for: "court building"
+[Search API] Executing Headless Image Search for: "court building"
+ GET /api/search?q=court+building&type=images 200 in 7ms (compile: 2ms, render: 5ms)
+ GET /search?q=indian+flag&type=images 200 in 22ms (compile: 6ms, render: 16ms)
+[Search API] Executing Headless Image Search for: "indian flag"
+ GET /api/search?q=indian+flag&type=images 200 in 1039ms (compile: 1727µs, render: 1038ms)
