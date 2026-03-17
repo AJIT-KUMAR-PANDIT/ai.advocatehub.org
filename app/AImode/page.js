@@ -404,7 +404,7 @@ export default function AImode() {
                     <div>
                         <p className="text-sm font-semibold text-[#2d1b12]">Use my own endpoint for chat</p>
                         <p className="ai-subtle mt-1 text-sm leading-6">
-                            Turn this on to send chat requests through your own provider instead of the built-in Gemini setup.
+                            Turn this on to send chat requests through your own provider instead of the built-in Gemini setup. If the fields below are blank, AdvocateHub now falls back to the `CUSTOM_LLM_*` values from `.env`.
                         </p>
                     </div>
                 </label>
