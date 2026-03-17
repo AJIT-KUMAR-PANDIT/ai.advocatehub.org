@@ -4883,3 +4883,89 @@ Caused by:
     3: No such file or directory (os error 2)
 Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
 Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (1233251) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for AfterResolvePluginCondition::matches (TaskId 181852))
+
+Caused by:
+    0: Looking up data for TaskId 181852 from database failed
+    1: Unable to open static sorted file referenced from 00000203.meta
+    2: Unable to open static sorted file 00000199.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1238686) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for parse (TaskId 181866))
+
+Caused by:
+    0: Looking up data for TaskId 181866 from database failed
+    1: Unable to open static sorted file referenced from 00000221.meta
+    2: Unable to open static sorted file 00000217.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1235718) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::resolve_asset (TaskId 181915))
+
+Caused by:
+    0: Looking up data for TaskId 181915 from database failed
+    1: Unable to open static sorted file referenced from 00000299.meta
+    2: Unable to open static sorted file 00000293.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1238686) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::resolve_asset (TaskId 181911))
+
+Caused by:
+    0: Looking up data for TaskId 181911 from database failed
+    1: Unable to open static sorted file referenced from 00000319.meta
+    2: Unable to open static sorted file 00000313.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (912181) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for <ModuleAssetContext as AssetContext>::resolve_asset (TaskId 181919))
+
+Caused by:
+    0: Looking up data for TaskId 181919 from database failed
+    1: Unable to open static sorted file referenced from 00000221.meta
+    2: Unable to open static sorted file 00000217.sst
+    3: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+⨯ Error: ENOENT: no such file or directory, open '/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/app/page/build-manifest.json'
+    at ignore-listed frames {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/ajitkumarpandit/Desktop/chat.advocatehub.org /ai.advocatehub.org/.next/dev/server/app/page/build-manifest.json'
+}
+
+thread 'tokio-runtime-worker' (1239420) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for PageEndpoint::client_evaluatable_assets (TaskId 181933))
+
+Caused by:
+    0: Looking up data for TaskId 181933 from database failed
+    1: Unable to open static sorted file referenced from 00000257.meta
+    2: Unable to open static sorted file 00000254.sst
+    3: No such file or directory (os error 2)
+
+thread 'tokio-runtime-worker' (1238258) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for get_jsx_transform_options (TaskId 181956))
+
+Caused by:
+    0: Looking up data for TaskId 181956 from database failed
+    1: Unable to open static sorted file referenced from 00000299.meta
+    2: Unable to open static sorted file 00000293.sst
+    3: No such file or directory (os error 2)
+○ Compiling /_error ...
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)
+
+thread 'tokio-runtime-worker' (1239424) panicked at /Users/geist/dev/actions-runner/_work/next.js/next.js/turbopack/crates/turbo-tasks-backend/src/backend/operation/mod.rs:156:17:
+Failed to restore task data (corrupted database or bug): Meta for AnalyzeIssue::new (TaskId 181960))
+
+Caused by:
+    0: Looking up data for TaskId 181960 from database failed
+    1: Unable to open static sorted file referenced from 00000221.meta
+    2: Unable to open static sorted file 00000217.sst
+    3: No such file or directory (os error 2)
+Persisting failed: Another write batch or compaction is already active (Only a single write operations is allowed at a time)

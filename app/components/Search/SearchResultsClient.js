@@ -7,6 +7,7 @@ import SearchHeader from "./SearchHeader";
 import ResultItem from "./ResultItem";
 import ResultImageItem from "./ResultImageItem";
 import ResultVideoItem from "./ResultVideoItem";
+import VideoPlaylist from "./VideoPlaylist";
 import ResultSkeleton from "./ResultSkeleton";
 import SearchSummaryCard from "./SearchSummaryCard";
 import SearchFiltersBar from "./SearchFiltersBar";
@@ -41,8 +42,6 @@ export default function SearchResultsClient() {
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState(null);
     const [visibleCount, setVisibleCount] = useState(8);
-    
-    const loadMoreRef = useRef(null);
 
     const providerLabel = meta?.provider === "bing"
         ? "Bing Custom Search"
@@ -155,37 +154,42 @@ export default function SearchResultsClient() {
         return () => controller.abort();
     }, [query, resultType, siteRestrict, dateRestrict]);
 
-    // Lazy loading for videos - load more when scrolling
+    // Infinite scroll - load more when scrolling to bottom
     const handleLoadMore = useCallback(() => {
-        if (loadingMore || visibleCount >= results.length) return;
+        if (loadingMore) return;
         setLoadingMore(true);
+        
+        // Simulate loading delay for smooth UX
         setTimeout(() => {
-            setVisibleCount(prev => Math.min(prev + 8, results.length));
+            const increment = resultType === "videos" || resultType === "images" ? 8 : 5;
+            setVisibleCount(prev => prev + increment);
             setLoadingMore(false);
-        }, 300);
-    }, [loadingMore, visibleCount, results.length]);
+        }, 200);
+    }, [loadingMore, resultType]);
 
+    // Scroll-based infinite loading with IntersectionObserver
     useEffect(() => {
-        if (resultType !== "videos" || results.length === 0) return;
+        if (results.length === 0) return;
         
         const observer = new IntersectionObserver(
             (entries) => {
-                if (entries[0].isIntersecting && visibleCount < results.length) {
+                if (entries[0].isIntersecting && !loadingMore) {
                     handleLoadMore();
                 }
             },
-            { threshold: 0.1 }
+            { threshold: 0, rootMargin: "200px" }
         );
 
-        if (loadMoreRef.current) {
-            observer.observe(loadMoreRef.current);
+        const sentinel = document.getElementById("lazy-load-sentinel");
+        if (sentinel) {
+            observer.observe(sentinel);
         }
 
         return () => observer.disconnect();
-    }, [resultType, results.length, visibleCount, handleLoadMore]);
+    }, [results.length, loadingMore, handleLoadMore]);
 
-    const visibleResults = resultType === "videos" ? results.slice(0, visibleCount) : results;
-    const hasMoreVideos = resultType === "videos" && visibleCount < results.length;
+    const visibleResults = results.slice(0, visibleCount);
+    const hasMoreResults = visibleCount < results.length;
 
     return (
         <div className="app-shell flex min-h-screen flex-col">
@@ -300,46 +304,59 @@ export default function SearchResultsClient() {
                             </div>
                         ) : results.length > 0 ? (
                             resultType === "images" ? (
-                                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                                    {results.map((item, index) => (
-                                        <ResultImageItem key={index} result={item} />
-                                    ))}
-                                </div>
-                            ) : resultType === "videos" ? (
                                 <>
-                                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4">
+                                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                                         {visibleResults.map((item, index) => (
-                                            <ResultVideoItem key={index} result={item} />
+                                            <ResultImageItem key={`img-${index}`} result={item} />
                                         ))}
                                     </div>
-                                    {hasMoreVideos && (
-                                        <div ref={loadMoreRef} className="flex justify-center py-6">
-                                            <button
-                                                onClick={handleLoadMore}
-                                                disabled={loadingMore}
-                                                className="action-primary px-6 py-3 text-sm font-semibold disabled:opacity-50"
-                                            >
-                                                {loadingMore ? (
-                                                    <span className="flex items-center gap-2">
-                                                        <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                        </svg>
-                                                        Loading...
-                                                    </span>
-                                                ) : (
-                                                    `Load More (${results.length - visibleCount} remaining)`
-                                                )}
-                                            </button>
+                                    {/* Infinite scroll sentinel - auto-loads more when scrolling */}
+                                    {hasMoreResults && (
+                                        <div id="lazy-load-sentinel" className="h-20 flex items-center justify-center">
+                                            {loadingMore && (
+                                                <div className="flex items-center gap-2 text-sm text-[#8f6a52]">
+                                                    <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    </svg>
+                                                    Loading more...
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </>
+                            ) : resultType === "videos" ? (
+                                <VideoPlaylist 
+                                    videos={results} 
+                                    visibleCount={visibleCount}
+                                    onLoadMore={handleLoadMore}
+                                    loadingMore={loadingMore}
+                                    hasMore={hasMoreResults}
+                                    query={query}
+                                    key={query}
+                                />
                             ) : (
-                                <div className="space-y-4">
-                                    {results.map((item, index) => (
-                                        <ResultItem key={index} result={item} />
-                                    ))}
-                                </div>
+                                <>
+                                    <div className="space-y-4">
+                                        {visibleResults.map((item, index) => (
+                                            <ResultItem key={`item-${index}`} result={item} />
+                                        ))}
+                                    </div>
+                                    {/* Infinite scroll sentinel */}
+                                    {hasMoreResults && (
+                                        <div id="lazy-load-sentinel" className="h-20 flex items-center justify-center">
+                                            {loadingMore && (
+                                                <div className="flex items-center gap-2 text-sm text-[#8f6a52]">
+                                                    <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    </svg>
+                                                    Loading more...
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
                             )
                         ) : query ? (
                             <div className="surface-panel-strong rounded-[28px] p-6">
@@ -347,7 +364,7 @@ export default function SearchResultsClient() {
                                     No matches found
                                 </p>
                                 <h2 className="font-display mt-4 text-3xl font-semibold text-[#2d1b12]">
-                                    No results for “{query}”
+                                    No results for &quot;{query}&quot;
                                 </h2>
                                 <ul className="mt-4 space-y-2 text-sm leading-7 text-[#7b5b42]">
                                     <li>Try another result type like PDF, DOCX, Images, Videos, or Audio.</li>
