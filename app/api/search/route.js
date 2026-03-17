@@ -1,18 +1,84 @@
 import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
+import { normalizeSearchResultType } from "@/lib/searchFilters";
 import {
     boostPriorityResults,
     buildBingSearchRequest,
     buildDuckDuckGoSearchRequest,
+    buildGoogleHtmlSearchRequest,
     buildGoogleSearchUrl,
     CUSTOM_SEARCH_PRIORITY,
     getSearchProviderOrder,
 } from "@/lib/searchConfig";
-import { normalizeSearchResultType } from "@/lib/searchFilters";
 import {
     buildSearchRedirectDisplayUrl,
     buildSearchRedirectPath,
 } from "@/lib/searchRedirect";
+
+function resolveGoogleTargetUrl(href = "") {
+    if (!href) return "";
+    
+    // Sometimes Google uses /url?q=... format
+    if (href.startsWith("/url?")) {
+        try {
+            const url = new URL(href, "https://www.google.com");
+            const q = url.searchParams.get("q");
+            if (q) return q;
+        } catch {
+            return href;
+        }
+    }
+    
+    return href.startsWith("/") ? `https://www.google.com${href}` : href;
+}
+
+function parseGoogleHtmlResults(html, num) {
+    const results = [];
+    const blockRegex = /<div class="g(?: [^>]+)?">(.*?)<\/div><\/div><\/div>/gs;
+    const titleRegex = /<h3[^>]*>(.*?)<\/h3>/i;
+    const linkRegex  = /<a[^>]+href="([^"]+)"[^>]*>/i;
+    // Common snippet classes: VwiC3b, s, st
+    const snippetRegex = /<div class="VwiC3b[^>]*>(.*?)<\/div>|<span class="aCOpRe"[^>]*>(.*?)<\/span>|<div class="s"[^>]*>(.*?)<\/div>/i;
+    const citeRegex  = /<cite[^>]*>(.*?)<\/cite>/i;
+
+    let match;
+    while ((match = blockRegex.exec(html)) !== null && results.length < num) {
+        const block = match[1];
+
+        const titleMatch = titleRegex.exec(block);
+        const linkMatch  = linkRegex.exec(block);
+        
+        if (!titleMatch || !linkMatch) continue;
+
+        let title = titleMatch[1].replace(/<[^>]*>?/gm, '').trim();
+        let rawHref = linkMatch[1];
+        if (rawHref === "#" || !rawHref) continue;
+
+        const targetUrl = resolveGoogleTargetUrl(rawHref);
+
+        const snippetMatch = snippetRegex.exec(block);
+        let snippet = "";
+        if (snippetMatch) {
+            snippet = (snippetMatch[1] || snippetMatch[2] || snippetMatch[3] || "").replace(/<[^>]*>?/gm, '').trim();
+        }
+
+        if (!snippet || snippet.length < 10) {
+            // fallback snippet removal of tags
+            snippet = block.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').substring(0, 150).trim() + "...";
+        }
+
+        const citeMatch = citeRegex.exec(block);
+        const visibleUrl = citeMatch ? citeMatch[1].replace(/<[^>]*>?/gm, '').split(" › ")[0].trim() : targetUrl;
+
+        results.push({
+            title,
+            link: targetUrl,
+            snippet,
+            formattedUrl: visibleUrl,
+        });
+    }
+
+    return results;
+}
 
 function wrapProviderResults(items = [], provider) {
     if (provider !== "bing" && provider !== "duckduckgo") {
@@ -42,32 +108,51 @@ function resolveDuckDuckGoTargetUrl(href = "") {
 }
 
 function parseDuckDuckGoHtmlResults(html, num) {
-    const $ = cheerio.load(html);
     const results = [];
+    let idx = html.indexOf('class="result__url" href="');
 
-    $(".result").each((_, element) => {
-        if (results.length >= num) {
-            return false;
+    while (idx !== -1 && results.length < num) {
+        const startHref = idx + 26;
+        const endHref = html.indexOf('"', startHref);
+        if (endHref === -1) break;
+        
+        const rawHref = html.substring(startHref, endHref);
+        const targetUrl = resolveDuckDuckGoTargetUrl(rawHref);
+
+        const snippetIdx = html.indexOf('class="result__snippet', endHref);
+        if (snippetIdx === -1) break;
+
+        const snippetStart = html.indexOf('>', snippetIdx) + 1;
+        const snippetEnd = html.indexOf('</a>', snippetStart);
+        if (snippetEnd === -1) break;
+
+        let snippet = html.substring(snippetStart, snippetEnd).replace(/<[^>]+>/g, '').trim();
+
+        // Title is usually above the snippet, but let's just make it the URL if we can't find it easily
+        // Usually targetUrl is good enough for lite parsing if title is obfuscated
+        let title = targetUrl;
+        
+        // Try to reverse-find title
+        const titleEnd = html.lastIndexOf('</a>', idx);
+        if (titleEnd !== -1) {
+            const titleStart = html.lastIndexOf('>', titleEnd - 1) + 1;
+            if (titleStart !== -1 && titleEnd - titleStart < 200) {
+                 const extractedTitle = html.substring(titleStart, titleEnd).replace(/<[^>]+>/g, '').trim();
+                 if (extractedTitle) title = extractedTitle;
+            }
         }
 
-        const linkElement = $(element).find(".result__title .result__a").first();
-        const title       = linkElement.text().trim();
-        const rawHref     = linkElement.attr("href") || "";
-        const targetUrl   = resolveDuckDuckGoTargetUrl(rawHref);
-        const snippet     = $(element).find(".result__snippet").first().text().trim();
-        const visibleUrl  = $(element).find(".result__url").first().text().trim();
-
-        if (!title || !targetUrl) {
-            return;
+        if (targetUrl) {
+            results.push({
+                title,
+                link: targetUrl,
+                snippet: snippet || targetUrl,
+                formattedUrl: targetUrl,
+            });
         }
 
-        results.push({
-            title,
-            link: targetUrl,
-            snippet: snippet || visibleUrl || targetUrl,
-            formattedUrl: visibleUrl || targetUrl,
-        });
-    });
+        idx = html.indexOf('class="result__url" href="', snippetEnd);
+    }
 
     return results;
 }
@@ -202,6 +287,39 @@ async function searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, n
     };
 }
 
+async function searchWithGoogleHtml({ query, fileType, siteRestrict, num, resultType }) {
+    const { url, headers } = buildGoogleHtmlSearchRequest({ query, fileType, siteRestrict, num, resultType });
+    const res  = await fetch(url, { headers });
+    const html = await res.text();
+
+    if (!res.ok) {
+        throw new Error(`Google HTML search error ${res.status}`);
+    }
+
+    if (html.includes("Our systems have detected unusual traffic") || html.includes("recaptcha")) {
+        throw new Error("Google blocked the automated request with a bot challenge (Captcha).");
+    }
+
+    const dedupedItems = parseGoogleHtmlResults(html, num)
+        .filter((item, index, items) => items.findIndex((candidate) => candidate.link === item.link) === index);
+
+    if (dedupedItems.length === 0) {
+        throw new Error("Google HTML returned no parsable search results (Possible layout change or block).");
+    }
+
+    const boostedItems = boostPriorityResults(dedupedItems);
+
+    return {
+        items: wrapProviderResults(boostedItems, "google_html"),
+        meta: {
+            provider: "google_html",
+            totalResults: dedupedItems.length,
+            formattedTotalResults: dedupedItems.length,
+            searchTime: null,
+        },
+    };
+}
+
 async function searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType }) {
     const { url, headers } = buildBingSearchRequest({ query, fileType, siteRestrict, dateRestrict, num, resultType });
     const res  = await fetch(url, { headers });
@@ -233,33 +351,43 @@ async function searchWithBing({ query, fileType, siteRestrict, dateRestrict, num
 
 async function searchWithDuckDuckGo({ query, fileType, siteRestrict, num, resultType }) {
     const { url, headers } = buildDuckDuckGoSearchRequest({ query, fileType, siteRestrict, resultType });
-    const res  = await fetch(url, { headers });
-    const html = await res.text();
+    const startTime = Date.now();
 
-    if (!res.ok) {
-        throw new Error(`DuckDuckGo search error ${res.status}`);
+    const response = await fetch(url, {
+        headers: {
+            ...headers,
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Upgrade-Insecure-Requests': '1'
+        },
+        next: { revalidate: 60 }
+    });
+
+    if (!response.ok) {
+        throw new Error(`DuckDuckGo API error: ${response.status}`);
     }
+
+    const html = await response.text();
 
     if (isDuckDuckGoChallengePage(html)) {
         throw new Error("DuckDuckGo blocked the automated request with a bot challenge.");
     }
 
-    const dedupedItems = parseDuckDuckGoHtmlResults(html, num)
-        .filter((item, index, items) => items.findIndex((candidate) => candidate.link === item.link) === index);
+    const items = parseDuckDuckGoHtmlResults(html, num);
 
-    if (dedupedItems.length === 0) {
-        throw new Error("DuckDuckGo returned no parsable search results.");
+    if (items.length === 0) {
+        throw new Error("DuckDuckGo returned no parsable search results (Possible layout change or block).");
     }
 
-    const boostedItems = boostPriorityResults(dedupedItems);
-
     return {
-        items: wrapProviderResults(boostedItems, "duckduckgo"),
+        items,
         meta: {
             provider: "duckduckgo",
-            totalResults: dedupedItems.length,
-            formattedTotalResults: dedupedItems.length,
-            searchTime: null,
+            totalResults: items.length,
+            formattedTotalResults: String(items.length),
+            searchTime: (Date.now() - startTime) / 1000,
         },
     };
 }
@@ -304,11 +432,16 @@ export async function GET(request) {
         attemptedProviders.push(provider);
 
         try {
-            const payload = provider === "google"
-                ? await searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num, resultType })
-                : provider === "bing"
-                    ? await searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType })
-                    : await searchWithDuckDuckGo({ query, fileType, siteRestrict, num, resultType });
+            let payload;
+            if (provider === "google") {
+                payload = await searchWithGoogle({ query, fileType, siteRestrict, dateRestrict, num, resultType });
+            } else if (provider === "google_html") {
+                payload = await searchWithGoogleHtml({ query, fileType, siteRestrict, num, resultType });
+            } else if (provider === "bing") {
+                payload = await searchWithBing({ query, fileType, siteRestrict, dateRestrict, num, resultType });
+            } else {
+                payload = await searchWithDuckDuckGo({ query, fileType, siteRestrict, num, resultType });
+            }
 
             return NextResponse.json({
                 items: payload.items,
@@ -332,9 +465,20 @@ export async function GET(request) {
             failures.push({
                 provider,
                 message: error.message,
+                stack: error.stack,
             });
+
+            // If Google API failed because it's disabled or quota exceeded, proactively inject google_html
+            // if it's not already in the queue, to gracefully degrade to scraping.
+            if (provider === "google" && !providerOrder.includes("google_html")) {
+                const currentIndex = providerOrder.indexOf("google");
+                providerOrder.splice(currentIndex + 1, 0, "google_html");
+            }
         }
     }
+
+    console.warn(`[search] All providers failed. Order was:`, providerOrder);
+    console.warn(`[search] Failures:`, failures);
 
     await new Promise((resolve) => setTimeout(resolve, 600));
 
