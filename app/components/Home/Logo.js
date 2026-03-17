@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function Logo({ compact = false }) {
+export default function Logo({ compact = false, caption = "Search first. AI second.", showCaption = true }) {
     return (
         <div className={`w-full flex flex-col items-center ${compact ? "mb-6" : "mb-8"}`}>
             <div className={`surface-card inline-flex items-center justify-center ${compact ? "rounded-[22px] px-5 py-4" : "rounded-[28px] px-6 py-5"}`}>
@@ -13,9 +13,11 @@ export default function Logo({ compact = false }) {
                     priority
                 />
             </div>
-            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8f6a52]">
-                Search first. AI second.
-            </p>
+            {showCaption && (
+                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#8f6a52]">
+                    {caption}
+                </p>
+            )}
         </div>
     );
 }

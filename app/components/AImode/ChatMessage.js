@@ -85,47 +85,54 @@ export default function ChatMessage({ message, isStreaming }) {
 
     if (isUser) {
         return (
-            <div className="mb-5 flex justify-end px-1">
-                <div className="max-w-[82%]">
-                    <p className="mb-2 text-right text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8f6a52]">
-                        You
-                    </p>
-                    <div className="rounded-[28px] rounded-tr-sm bg-[linear-gradient(135deg,#ffd27b,#ff8f63)] px-4 py-3 text-[#2a1610] shadow-[0_16px_28px_rgba(28,13,9,0.2)]">
-                        {hasAttachments && (
-                            <div className="mb-2 flex flex-wrap justify-end gap-2">
-                                {message.attachments.map((attachment) => (
-                                    <AttachmentChip
-                                        key={attachment.id}
-                                        attachment={attachment}
-                                        tone="user"
-                                    />
-                                ))}
-                            </div>
-                        )}
+            <section className="mb-8">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8f6a52]">
+                    Question
+                </p>
+                <div className="rounded-[28px] border border-[#f1dfc6] bg-[#fff8ef] px-5 py-4 shadow-[0_10px_24px_rgba(77,45,20,0.04)]">
+                    {hasAttachments && (
+                        <div className="mb-3 flex flex-wrap gap-2">
+                            {message.attachments.map((attachment) => (
+                                <AttachmentChip
+                                    key={attachment.id}
+                                    attachment={attachment}
+                                    tone="user"
+                                />
+                            ))}
+                        </div>
+                    )}
 
-                        {message.text && (
-                            <p className="whitespace-pre-wrap text-sm leading-7">{message.text}</p>
-                        )}
-                    </div>
+                    {message.text && (
+                        <p className="whitespace-pre-wrap text-base leading-7 text-[#2d1b12]">
+                            {message.text}
+                        </p>
+                    )}
                 </div>
-            </div>
+            </section>
         );
     }
 
     return (
-        <div className="mb-6 flex items-start gap-3 px-1">
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] shadow-sm">
-                <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                </svg>
+        <section className="mb-8">
+            <div className="mb-3 flex items-center gap-3">
+                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ffbe4a,#ff6e41)] shadow-sm">
+                    <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8f6a52]">
+                        Answer
+                    </p>
+                    <p className="mt-1 text-sm text-[#7b5b42]">
+                        AdvocateHub AI
+                    </p>
+                </div>
             </div>
 
-            <div className="max-w-[88%] flex-1">
-                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8f6a52]">
-                    AdvocateHub AI
-                </p>
-                <div className="rounded-[30px] rounded-tl-sm border border-[#f1dfc6] bg-white/88 px-5 py-4 shadow-[0_14px_28px_rgba(77,45,20,0.06)] backdrop-blur-sm">
+            <div className="rounded-[32px] border border-[#f1dfc6] bg-white/92 px-6 py-5 shadow-[0_14px_28px_rgba(77,45,20,0.06)] backdrop-blur-sm">
+                <div className="max-w-none">
                     {message.text
                         ? <div className="max-w-none">{renderMarkdown(message.text)}</div>
                         : <div className="flex items-center gap-1 py-1">
@@ -138,6 +145,6 @@ export default function ChatMessage({ message, isStreaming }) {
                 </div>
                 <div ref={endRef} />
             </div>
-        </div>
+        </section>
     );
 }
