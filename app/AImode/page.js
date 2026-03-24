@@ -235,9 +235,14 @@ export default function AImode() {
                     ? llmSettings.url 
                     : llmSettings.url.replace(/\/+$/, "") + "/chat/completions";
 
+                const headers = { "Content-Type": "application/json" };
+                if (llmSettings.apiKey.trim()) {
+                    headers["Authorization"] = `Bearer ${llmSettings.apiKey.trim()}`;
+                }
+
                 const res = await fetch(targetUrl, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers,
                     body: JSON.stringify({
                         model: llmSettings.model || "lmstudio-model",
                         messages: [
