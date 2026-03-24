@@ -227,6 +227,73 @@ export default function AImode() {
             // Use the ref so we always have the latest history (including the user msg we just added)
             const history = buildHistory(messagesRef.current);
 
+            // Handle direct client-side fetch (bypassing the cloud backend)
+            const isLocal = llmSettings.enabled && (llmSettings.url.includes("127.0.0.1") || llmSettings.url.includes("localhost"));
+            
+            if (isLocal) {
+                const targetUrl = llmSettings.url.endsWith("/chat/completions") 
+                    ? llmSettings.url 
+                    : llmSettings.url.replace(/\/+$/, "") + "/chat/completions";
+
+                const res = await fetch(targetUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        model: llmSettings.model || "lmstudio-model",
+                        messages: [
+                            ...history.map(h => ({ role: h.role === "model" ? "assistant" : "user", content: h.parts[0].text })),
+                            { role: "user", content: userText }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 2048,
+                        stream: true,
+                    }),
+                    signal,
+                });
+
+                if (!res.ok) {
+                    throw new Error(`LM Studio Connection Failed (${res.status}). Make sure CORS is turned ON in LM Studio.`);
+                }
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const events = buffer.split("\n\n");
+                    buffer = events.pop() ?? "";
+
+                    for (const event of events) {
+                        const dataLine = event.split("\n").find(line => line.startsWith("data:"));
+                        if (!dataLine) continue;
+                        
+                        const dataStr = dataLine.replace(/^data:\s?/, "");
+                        if (dataStr === "[DONE]") continue;
+
+                        try {
+                            const payload = JSON.parse(dataStr);
+                            const text = payload?.choices?.[0]?.delta?.content || payload?.choices?.[0]?.message?.content;
+                            
+                            if (text) {
+                                setMessages((prev) => prev.map((m) => m.id === aiMsgId ? { ...m, text: m.text + text } : m));
+                            }
+                        } catch (e) {
+                            // ignore partial JSON
+                        }
+                    }
+                }
+                
+                setMessages((prev) => prev.map((m) => (m.id === aiMsgId ? { ...m, isStreaming: false } : m)));
+                setIsLoading(false);
+                inputRef.current?.focus();
+                return; // Exit, bypass cloud server completely
+            }
+
+            // Normal Cloud API call
             const res = await fetch("/api/ai", {
                 method:  "POST",
                 headers: { "Content-Type": "application/json" },

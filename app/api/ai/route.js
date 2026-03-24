@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import mqtt from "mqtt";
 import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
 import WordExtractor from "word-extractor";
@@ -637,9 +638,88 @@ async function streamAnthropicResponse({ message, history, attachments, llmConfi
     }
 }
 
+async function streamMqttResponse({ message, history, attachments, llmConfig, send }) {
+    // Build payload first to avoid async callbacks inside event listeners
+    const resolvedHistory = historyToOpenAIMessages(history);
+    const resolvedUserContent = await buildOpenAIUserContent(message, attachments);
+
+    return new Promise((resolve, reject) => {
+        try {
+            const client = mqtt.connect('mqtt://broker.hivemq.com');
+            const requestId = Math.random().toString(36).substring(2, 15);
+            const responseTopic = `advocatehub/ai/response/${requestId}`;
+            
+            // Timeout safety
+            const timeout = setTimeout(() => {
+                client.end();
+                reject(new Error("MQTT request timed out waiting for the local bridge. Is local-mqtt-bridge.js running?"));
+            }, 45000);
+
+            client.on('connect', () => {
+                client.subscribe(responseTopic, (err) => {
+                    if (err) {
+                        clearTimeout(timeout);
+                        client.end();
+                        return reject(err);
+                    }
+                    
+                    // Publish the request payload
+                    const payload = {
+                        requestId,
+                        model: llmConfig.model,
+                        systemPrompt: llmConfig.systemPrompt,
+                        history: resolvedHistory,
+                        userContent: resolvedUserContent,
+                        url: llmConfig.url,
+                        temperature: llmConfig.temperature,
+                        maxTokens: llmConfig.maxTokens,
+                    };
+                    
+                    client.publish('advocatehub/ai/request', JSON.stringify(payload));
+                });
+            });
+
+            client.on('message', (topic, payload) => {
+                if (topic !== responseTopic) return;
+                
+                try {
+                    const data = JSON.parse(payload.toString());
+                    
+                    if (data.type === 'chunk') {
+                        send({ type: "chunk", text: data.text });
+                    } else if (data.type === 'error') {
+                        clearTimeout(timeout);
+                        client.end();
+                        reject(new Error(data.message));
+                    } else if (data.type === 'done') {
+                        clearTimeout(timeout);
+                        client.end();
+                        resolve();
+                    }
+                } catch (e) {
+                    // Ignore JSON parse errors in chunks
+                }
+            });
+
+            client.on('error', (err) => {
+                clearTimeout(timeout);
+                client.end();
+                reject(new Error(`MQTT Connection Error: ${err.message}`));
+            });
+            
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
 async function streamCustomLlmResponse({ message, history, attachments, llmConfig, send }) {
     if (llmConfig.provider === "anthropic") {
         return streamAnthropicResponse({ message, history, attachments, llmConfig, send });
+    }
+    
+    if (llmConfig.provider === "mqtt") {
+        return streamMqttResponse({ message, history, attachments, llmConfig, send });
     }
 
     return streamOpenAICompatibleResponse({ message, history, attachments, llmConfig, send });
