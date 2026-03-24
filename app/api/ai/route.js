@@ -19,7 +19,10 @@ import {
     buildOpenRouterHeaders,
     GEMINI_CONFIG,
     resolveCustomLlmConfig,
+    BING_HTML_TEXT_CONFIG,
 } from "@/lib/searchConfig";
+
+// We'll make the search call directly via fetch to avoid import issues
 
 /**
  * POST /api/ai
@@ -642,6 +645,140 @@ async function streamCustomLlmResponse({ message, history, attachments, llmConfi
     return streamOpenAICompatibleResponse({ message, history, attachments, llmConfig, send });
 }
 
+// Fallback AI response using live search (no API key required)
+async function parseBingHtmlTextResults(html, num) {
+    const results = [];
+    let idx = html.indexOf('<li class="b_algo"');
+
+    while (idx !== -1 && results.length < num) {
+        const endBlock = html.indexOf('</li>', idx);
+        if (endBlock === -1) break;
+        
+        const block = html.substring(idx, endBlock);
+        
+        const h2Start = block.indexOf('<h2>');
+        if (h2Start !== -1) {
+            const h2End = block.indexOf('</h2>', h2Start);
+            const h2Html = block.substring(h2Start, h2End);
+            
+            const hrefStart = h2Html.indexOf('href="');
+            if (hrefStart !== -1) {
+                const hrefStartPos = hrefStart + 6;
+                const hrefEnd = h2Html.indexOf('"', hrefStartPos);
+                const targetUrl = h2Html.substring(hrefStartPos, hrefEnd);
+                
+                const titleText = h2Html.replace(/<[^>]+>/g, '').trim();
+                
+                let snippet = "";
+                const snipDivStart = block.indexOf('class="b_caption"');
+                if (snipDivStart !== -1) {
+                    const pStart = block.indexOf('<p', snipDivStart);
+                    if (pStart !== -1) {
+                        let pEnd = block.indexOf('</p>', pStart);
+                        if (pEnd === -1) pEnd = block.indexOf('</div>', pStart);
+                        snippet = block.substring(pStart, pEnd !== -1 ? pEnd : block.length).replace(/<[^>]+>/g, '').trim();
+                    }
+                }
+                
+                if (!snippet) {
+                    const fallbackP = block.indexOf('<p');
+                    if (fallbackP !== -1) {
+                        const fallbackPEnd = block.indexOf('</p>', fallbackP);
+                        snippet = block.substring(fallbackP, fallbackPEnd !== -1 ? fallbackPEnd : block.length).replace(/<[^>]+>/g, '').trim();
+                    }
+                }
+                
+                if (targetUrl.startsWith('http')) {
+                    results.push({
+                        title: titleText,
+                        link: targetUrl,
+                        snippet: snippet || titleText,
+                        formattedUrl: targetUrl
+                    });
+                }
+            }
+        }
+        idx = html.indexOf('<li class="b_algo"', endBlock);
+    }
+
+    return results;
+}
+
+async function streamSearchBasedResponse({ message, send }) {
+    const { baseUrl, userAgent } = BING_HTML_TEXT_CONFIG;
+    const url = new URL(baseUrl);
+    
+    url.searchParams.set("q", message);
+    url.searchParams.set("first", "1");
+    url.searchParams.set("adlt", "moderate");
+
+    try {
+        const response = await fetch(url.toString(), {
+            headers: {
+                "User-Agent": userAgent,
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-IN,en-US;q=0.9,en;q=0.8",
+            },
+            next: { revalidate: 30 }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Search failed: ${response.status}`);
+        }
+
+        const html = await response.text();
+        const searchResults = parseBingHtmlTextResults(html, 10);
+
+        if (searchResults.length === 0) {
+            throw new Error("No search results found");
+        }
+
+        // Format results as an AI response
+        const intro = `I found the following information for your query "${message}":\n\n`;
+        
+        // Stream the intro
+        for (const char of intro) {
+            send({ type: "chunk", text: char });
+            await new Promise(r => setTimeout(r, 10));
+        }
+
+        // Add each result
+        for (let i = 0; i < searchResults.length; i++) {
+            const result = searchResults[i];
+            const formattedResult = `\n${i + 1}. ${result.title}\n${result.snippet || ''}\nSource: ${result.formattedUrl}\n\n`;
+            
+            for (const char of formattedResult) {
+                send({ type: "chunk", text: char });
+                await new Promise(r => setTimeout(r, 5));
+            }
+        }
+
+        const conclusion = "\nWould you like me to elaborate on any of these results or search for something more specific?";
+        
+        for (const char of conclusion) {
+            send({ type: "chunk", text: char });
+            await new Promise(r => setTimeout(r, 10));
+        }
+
+        // Send sources
+        const sources = searchResults.slice(0, 5).map((r) => ({
+            title: r.title,
+            uri: r.link
+        }));
+        
+        send({ type: "sources", sources });
+
+    } catch (error) {
+        // If search fails, provide a helpful message
+        const fallbackMsg = `I couldn't search the web right now due to: ${error.message}. However, please try rephrasing your question or try again in a moment. You can also try using the regular search feature to find information.`;
+        
+        for (const char of fallbackMsg) {
+            send({ type: "chunk", text: char });
+            await new Promise(r => setTimeout(r, 15));
+        }
+    }
+}
+
 export async function POST(request) {
     try {
         const body        = await request.json();
@@ -670,15 +807,46 @@ export async function POST(request) {
                 }
 
                 try {
+                    // Check if we should use custom LLM
                     if (llmConfig.shouldUse) {
                         await streamCustomLlmResponse({ message, history, attachments, llmConfig, send });
-                    } else {
+                    } 
+                    // Check if Gemini API key is available
+                    else if (GEMINI_CONFIG.apiKey && GEMINI_CONFIG.apiKey !== "your_gemini_api_key_here") {
                         await streamGeminiResponse({ message, history, attachments, send });
+                    } 
+                    // Fallback to search-based AI response (no API key required)
+                    else {
+                        // Send a message explaining we're using search-based AI
+                        const welcomeMsg = "🔍 I'm using search-powered AI (no API key needed). Let me search for information about your query...\n\n";
+                        for (const char of welcomeMsg) {
+                            send({ type: "chunk", text: char });
+                            await new Promise(r => setTimeout(r, 10));
+                        }
+                        
+                        await streamSearchBasedResponse({ message, send });
                     }
 
                     send({ type: "done" });
                 } catch (err) {
                     console.error("[ai] Stream error:", err);
+                    
+                    // If AI fails, try search-based fallback
+                    if (!llmConfig.shouldUse && (!GEMINI_CONFIG.apiKey || GEMINI_CONFIG.apiKey === "your_gemini_api_key_here")) {
+                        try {
+                            const fallbackMsg = "\n\n⚠️ The AI service encountered an error. Let me try a direct search instead...\n\n";
+                            for (const char of fallbackMsg) {
+                                send({ type: "chunk", text: char });
+                            }
+                            await streamSearchBasedResponse({ message, send });
+                            send({ type: "done" });
+                            controller.close();
+                            return;
+                        } catch (searchErr) {
+                            console.error("[ai] Search fallback also failed:", searchErr);
+                        }
+                    }
+                    
                     send({ type: "error", message: err.message || "AI response failed" });
                 } finally {
                     controller.close();

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 const NAV_ITEMS = [
     { href: "/", label: "Search" },
@@ -11,6 +12,7 @@ const NAV_ITEMS = [
 
 export default function Header() {
     const pathname = usePathname();
+    const { data: session } = useSession();
 
     return (
         <header className="px-4 pt-5 sm:px-6 lg:px-8">
@@ -55,26 +57,49 @@ export default function Header() {
                     })}
                 </nav>
 
-                <Link
-                    href={pathname === "/AImode" ? "/" : "/AImode"}
-                    className="action-primary px-5 py-2.5 text-sm font-semibold sm:px-6"
-                >
-                    {pathname === "/AImode" ? (
-                        <>
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            Back
-                        </>
+                <div className="flex items-center gap-3">
+                    {session?.user ? (
+                        <div className="flex items-center gap-3">
+                            <span className="hidden text-sm text-[#7b5b42] sm:block">
+                                {session.user.email}
+                            </span>
+                            <button
+                                onClick={() => signOut()}
+                                className="rounded-full border border-[#f1dfc6] bg-white/90 px-4 py-2 text-sm font-medium text-[#7b5b42] transition-all duration-300 hover:-translate-y-1 hover:border-[#ffcf93] hover:text-[#2d1b12] hover:shadow-md"
+                            >
+                                Sign Out
+                            </button>
+                        </div>
                     ) : (
-                        <>
-                            Open AI
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        </>
+                        <button
+                            onClick={() => signIn("google")}
+                            className="action-primary px-5 py-2.5 text-sm font-semibold sm:px-6"
+                        >
+                            Sign In
+                        </button>
                     )}
-                </Link>
+                    
+                    <Link
+                        href={pathname === "/AImode" ? "/" : "/AImode"}
+                        className="action-primary px-5 py-2.5 text-sm font-semibold sm:px-6"
+                    >
+                        {pathname === "/AImode" ? (
+                            <>
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Back
+                            </>
+                        ) : (
+                            <>
+                                Open AI
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </>
+                        )}
+                    </Link>
+                </div>
             </div>
         </header>
     );

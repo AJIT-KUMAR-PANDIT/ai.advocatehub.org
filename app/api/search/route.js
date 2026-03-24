@@ -10,7 +10,8 @@ import {
     getSearchProviderOrder,
     BING_HTML_IMAGE_CONFIG,
     BING_HTML_TEXT_CONFIG,
-    BING_HTML_VIDEO_CONFIG
+    BING_HTML_VIDEO_CONFIG,
+    BRAVE_SEARCH_CONFIG
 } from "@/lib/searchConfig";
 import {
     buildSearchRedirectDisplayUrl,
@@ -543,19 +544,83 @@ async function searchVideosWithBingHtml({ query, num }) {
     };
 }
 
+async function searchWithBrave({ query, num }) {
+    const { apiKey, baseUrl } = BRAVE_SEARCH_CONFIG;
+    
+    if (!apiKey) {
+        throw new Error("Brave Search API key not configured");
+    }
+    
+    const url = new URL(baseUrl);
+    url.searchParams.set("q", query);
+    url.searchParams.set("count", String(num || 20));
+    url.searchParams.set("country", "IN");
+    url.searchParams.set("search_lang", "en");
+
+    const startTime = Date.now();
+    
+    const response = await fetch(url.toString(), {
+        headers: {
+            "X-Subscription-Token": apiKey,
+            "Accept": "application/json",
+        },
+        next: { revalidate: 60 }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Brave Search API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const items = (data.web?.results || []).map((item) => ({
+        title: item.title,
+        link: item.url,
+        snippet: item.description,
+        formattedUrl: item.domain,
+    }));
+
+    if (items.length === 0) {
+        throw new Error("Brave Search returned no results");
+    }
+
+    return {
+        items,
+        meta: {
+            provider: "brave",
+            totalResults: data.web?.totalResults || items.length,
+            formattedTotalResults: String(data.web?.totalResults || items.length),
+            searchTime: (Date.now() - startTime) / 1000,
+        },
+    };
+}
+
 function buildMockResults(query, resultType = "all") {
+    const q = query.toLowerCase();
+    const isLegal = q.includes('law') || q.includes('court') || q.includes('section') || q.includes('ipc') || 
+                    q.includes('crpc') || q.includes('cpc') || q.includes('constitution') || q.includes('article') ||
+                    q.includes('judgment') || q.includes('act') || q.includes('legal') || q.includes('criminal') ||
+                    q.includes('civil') || q.includes('property') || q.includes('divorce') || q.includes('tenant') ||
+                    q.includes('land') || q.includes('rental') || q.includes('cheque') || q.includes('bail') ||
+                    q.includes(' FIR') || q.includes('police') || q.includes('complaint');
+    
     if (resultType === "videos") {
         return [
             {
-                title: `${query} - Supreme Court of India videos`,
+                title: `${query} - Supreme Court of India Official Channel`,
                 link: "https://www.youtube.com/@supremecourtofindia",
-                snippet: `Video content, explainers, and hearings related to ${query}.`,
+                snippet: `Official video content, explainers, and hearings related to ${query}.`,
                 formattedUrl: "youtube.com",
             },
             {
-                title: `${query} - LiveLaw video coverage`,
+                title: `${query} - LiveLaw Legal Coverage`,
                 link: "https://www.youtube.com/@LiveLawIndia",
                 snippet: `Legal explainers and court coverage relevant to ${query}.`,
+                formattedUrl: "youtube.com",
+            },
+            {
+                title: `${query} - LegalEagle (India)`,
+                link: "https://www.youtube.com/results?search_query=" + encodeURIComponent(query + " India legal"),
+                snippet: `Indian legal explanations and case analysis on ${query}.`,
                 formattedUrl: "youtube.com",
             },
         ];
@@ -612,36 +677,79 @@ function buildMockResults(query, resultType = "all") {
         ];
     }
 
+    // Enhanced legal-specific results
+    if (isLegal) {
+        return [
+            {
+                title: `Supreme Court of India - ${query}`,
+                link: "https://main.sci.gov.in/",
+                snippet: `Official Supreme Court of India portal. Search rulings, case status, and judgments related to: ${query}.`,
+                formattedUrl: "main.sci.gov.in",
+            },
+            {
+                title: `Indian Kanoon - ${query}`,
+                link: `https://indiankanoon.org/search/?formInput=${encodeURIComponent(query)}`,
+                snippet: `Search legal documents, judgments, Bare Acts, and legal articles related to: ${query}.`,
+                formattedUrl: "indiankanoon.org",
+            },
+            {
+                title: `Ministry of Law & Justice`,
+                link: "https://lawmin.gov.in/",
+                snippet: `Official government portal for legislative acts, legal affairs, and justice department.`,
+                formattedUrl: "lawmin.gov.in",
+            },
+            {
+                title: `India Code - Bare Acts`,
+                link: "https://indiacode.nic.in/",
+                snippet: `Browse and search Indian statutes, bare acts, and codified laws.`,
+                formattedUrl: "indiacode.nic.in",
+            },
+            {
+                title: `LiveLaw - Legal News`,
+                link: "https://www.livelaw.in/",
+                snippet: `Latest legal news, Supreme Court & High Court judgments, case analysis.`,
+                formattedUrl: "www.livelaw.in",
+            },
+            {
+                title: `Bar & Bench - Legal Updates`,
+                link: "https://www.barandbench.com/",
+                snippet: `Breaking legal news, court judgments, and legal analysis in India.`,
+                formattedUrl: "barandbench.com",
+            },
+            {
+                title: `India Judicial Data`,
+                link: "https://njdg.ecourts.gov.in/",
+                snippet: `National Judicial Data Grid - Search case status across Indian courts.`,
+                formattedUrl: "njdg.ecourts.gov.in",
+            },
+        ];
+    }
+
+    // Non-legal default results
     return [
         {
-            title: `${query} - Supreme Court of India`,
-            link: "https://main.sci.gov.in/",
-            snippet: `Official rulings and case status from the Supreme Court of India related to: ${query}.`,
-            formattedUrl: "main.sci.gov.in",
+            title: `${query} - Google Search`,
+            link: "https://www.google.com/search?q=" + encodeURIComponent(query),
+            snippet: `Search the web for: ${query}`,
+            formattedUrl: "google.com",
         },
         {
-            title: `${query} - Indian Kanoon`,
-            link: `https://indiankanoon.org/search/?formInput=${encodeURIComponent(query)}`,
-            snippet: `Legal documents, High Court judgments and Acts related to: ${query}.`,
+            title: `${query} - Wikipedia`,
+            link: "https://en.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(query),
+            snippet: `Search Wikipedia for: ${query}`,
+            formattedUrl: "en.wikipedia.org",
+        },
+        {
+            title: `${query} - YouTube`,
+            link: "https://www.youtube.com/results?search_query=" + encodeURIComponent(query),
+            snippet: `Watch videos about: ${query}`,
+            formattedUrl: "youtube.com",
+        },
+        {
+            title: `${query} - Indian Legal Resources`,
+            link: "https://indiankanoon.org/search/?formInput=" + encodeURIComponent(query),
+            snippet: `Search Indian legal documents for: ${query}`,
             formattedUrl: "indiankanoon.org",
-        },
-        {
-            title: `Ministry of Law & Justice - ${query}`,
-            link: "https://lawmin.gov.in/",
-            snippet: `Legislative acts, legal affairs, and justice department references for: ${query}.`,
-            formattedUrl: "lawmin.gov.in",
-        },
-        {
-            title: `India Code - ${query}`,
-            link: "https://indiacode.nic.in/",
-            snippet: `Browse Indian statutes and bare acts. Relevant codified laws for: ${query}.`,
-            formattedUrl: "indiacode.nic.in",
-        },
-        {
-            title: `LiveLaw - ${query}`,
-            link: "https://www.livelaw.in/",
-            snippet: `Latest legal news, court updates and analysis related to: ${query}.`,
-            formattedUrl: "www.livelaw.in",
         },
     ];
 }
@@ -972,7 +1080,7 @@ export async function GET(request) {
     }
 
     // Use live search providers (no API key required)
-    const providerOrder = ["bing_html", "google_html", "duckduckgo"];
+    const providerOrder = ["brave", "bing_html", "google_html", "duckduckgo"];
     const attemptedProviders = [];
     const failures = [];
 
@@ -985,6 +1093,8 @@ export async function GET(request) {
                 payload = await searchWithGoogleHtml({ query, fileType, siteRestrict, num, resultType });
             } else if (provider === "bing_html") {
                 payload = await searchWithBingHtmlText({ query, num });
+            } else if (provider === "brave") {
+                payload = await searchWithBrave({ query, num });
             } else {
                 payload = await searchWithDuckDuckGo({ query, fileType, siteRestrict, num, resultType });
             }
@@ -1061,21 +1171,25 @@ export async function GET(request) {
     console.warn(`[search] All providers failed. Order was:`, providerOrder);
     console.warn(`[search] Failures:`, failures);
 
-    // Return empty results instead of mock
+    // Return enhanced mock results as fallback
+    const mockItems = buildMockResults(query, resultType);
+    
     return NextResponse.json({
-        items: [],
+        items: mockItems,
         meta: {
             query,
             resultType,
             fileType,
             siteRestrict,
             dateRestrict,
-            provider: "none",
+            provider: "fallback",
             requestedProvider: CUSTOM_SEARCH_PRIORITY,
             attemptedProviders,
             failures,
-            isMock: false,
-            error: "Search temporarily unavailable. Please try again."
+            isMock: true,
+            totalResults: mockItems.length,
+            formattedTotalResults: String(mockItems.length),
+            note: "Showing curated legal resources. Live search unavailable."
         },
     });
 }

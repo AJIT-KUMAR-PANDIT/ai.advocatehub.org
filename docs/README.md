@@ -6,7 +6,8 @@ AdvocateHub is a minimal search engine with AI-powered summaries, built for sear
 
 ## Features
 
-- **Web Search**: Live search results from Bing, Google, and DuckDuckGo
+- **Web Search**: Live search results from Bing, Google, and DuckDuckGo (no API key required)
+- **AI Mode**: Works without API key using live search-based responses
 - **AI Summaries**: Get AI-generated summaries of search results
 - **File Type Filters**: Search specifically for PDFs, DOCX, images, videos, audio
 - **Video Player**: Inline video playback with playlist view (like Bing Videos)
@@ -152,6 +153,15 @@ The application uses multiple search providers in priority order:
 5. **Bing Videos** - Video search
 
 All providers work without API keys using HTML scraping.
+
+## AI Mode (No API Key Required)
+
+The AI mode works without requiring any API key:
+
+1. **With GEMINI_API_KEY**: Uses Google Gemini for AI responses with search grounding
+2. **Without API Key**: Uses live search-based AI responses (falls back to Bing search and formats results as AI answers)
+
+This means you can use the AI features immediately without any configuration!
 
 ## Configuration
 
